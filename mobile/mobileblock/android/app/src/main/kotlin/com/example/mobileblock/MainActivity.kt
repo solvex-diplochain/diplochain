@@ -1,0 +1,5 @@
+package com.example.mobileblock
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
