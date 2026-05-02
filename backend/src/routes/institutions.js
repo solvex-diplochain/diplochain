@@ -1,0 +1,63 @@
+const express = require('express');
+const { body } = require('express-validator');
+const { protect, authorize } = require('../middleware/auth');
+const {
+  getInstitutions,
+  getInstitutionById,
+  createInstitution,
+  updateInstitution,
+  getInstitutionDiplomas
+} = require('../controllers/institutionController');
+
+const router = express.Router();
+
+const createValidation = [
+  body('name')
+    .trim()
+    .isLength({ min: 3, max: 150 })
+    .withMessage('Le nom doit contenir entre 3 et 150 caractères'),
+  body('type')
+    .optional()
+    .isIn(['university', 'college', 'institute', 'academy', 'training-center'])
+    .withMessage('Type invalide'),
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Email invalide'),
+  body('phone')
+    .optional()
+    .matches(/^\+?[1-9]\d{1,14}$/)
+    .withMessage('Numéro de téléphone invalide'),
+  body('website')
+    .optional()
+    .matches(/^https?:\/\/.*/)
+    .withMessage('URL du site web invalide')
+];
+
+const updateValidation = [
+  body('name')
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 150 })
+    .withMessage('Le nom doit contenir entre 3 et 150 caractères'),
+  body('type')
+    .optional()
+    .isIn(['university', 'college', 'institute', 'academy', 'training-center'])
+    .withMessage('Type invalide'),
+  body('phone')
+    .optional()
+    .matches(/^\+?[1-9]\d{1,14}$/)
+    .withMessage('Numéro de téléphone invalide'),
+  body('website')
+    .optional()
+    .matches(/^https?:\/\/.*/)
+    .withMessage('URL du site web invalide')
+];
+
+router.get('/', getInstitutions);
+router.post('/', protect, authorize('institution'), createValidation, createInstitution);
+router.get('/:id', getInstitutionById);
+router.put('/:id', protect, updateValidation, updateInstitution);
+router.get('/:id/diplomas', protect, getInstitutionDiplomas);
+
+module.exports = router;

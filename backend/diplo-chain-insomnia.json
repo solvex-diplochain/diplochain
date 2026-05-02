@@ -1,0 +1,339 @@
+{
+	"_type": "export",
+	"__export_format": 4,
+	"__export_date": "2026-05-01T20:15:00.000Z",
+	"__export_source": "insomnia.desktop.app:v2023.5.8",
+	"resources": [
+		{
+			"_id": "wrk_diplochain_1",
+			"parentId": null,
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"name": "DiploChain API",
+			"description": "Collection complète des APIs DiploChain pour la gestion des diplômes sur la blockchain.",
+			"scope": "collection",
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_local_1",
+			"parentId": "wrk_diplochain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"name": "Local Environment",
+			"data": {
+				"base_url": "http://localhost:5000/api",
+				"token": "VOTRE_TOKEN_JWT_ICI"
+			},
+			"dataPropertyOrder": {
+				"&": [
+					"base_url",
+					"token"
+				]
+			},
+			"color": "#7d69cb",
+			"isPrivate": false,
+			"metaSortKey": 1682971200000,
+			"_type": "environment"
+		},
+		{
+			"_id": "fld_auth_1",
+			"parentId": "wrk_diplochain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"name": "1. Authentification",
+			"description": "",
+			"environment": {},
+			"environmentPropertyOrder": null,
+			"metaSortKey": -1682971200000,
+			"_type": "request_group"
+		},
+		{
+			"_id": "req_register_1",
+			"parentId": "fld_auth_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/auth/register",
+			"name": "Inscription",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"firstName\": \"Jean\",\n\t\"lastName\": \"Dupont\",\n\t\"email\": \"jean.dupont@example.com\",\n\t\"password\": \"password123\",\n\t\"role\": \"student\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1682971200000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_login_1",
+			"parentId": "fld_auth_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/auth/login",
+			"name": "Connexion",
+			"description": "",
+			"method": "POST",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"email\": \"admin@diplochain.com\",\n\t\"password\": \"admin123\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1682971100000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_profile_1",
+			"parentId": "fld_auth_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/auth/profile",
+			"name": "Profil Utilisateur",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682971000000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "fld_diplomas_1",
+			"parentId": "wrk_diplochain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"name": "2. Diplômes",
+			"description": "",
+			"environment": {},
+			"environmentPropertyOrder": null,
+			"metaSortKey": -1682971100000,
+			"_type": "request_group"
+		},
+		{
+			"_id": "req_get_diplomas_1",
+			"parentId": "fld_diplomas_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/diplomas",
+			"name": "Liste des Diplômes",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [
+				{
+					"name": "status",
+					"value": "verified",
+					"disabled": true
+				}
+			],
+			"headers": [],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682971200000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_create_diploma_1",
+			"parentId": "fld_diplomas_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/diplomas",
+			"name": "Créer un Diplôme (Multipart)",
+			"description": "Nécessite le rôle 'institution'. Envoyez le PDF dans le champ 'diplomaFile'.",
+			"method": "POST",
+			"body": {
+				"mimeType": "multipart/form-data",
+				"params": [
+					{
+						"name": "studentId",
+						"value": "ID_DE_L_ETUDIANT"
+					},
+					{
+						"name": "title",
+						"value": "Master en Informatique"
+					},
+					{
+						"name": "field",
+						"value": "Génie Logiciel"
+					},
+					{
+						"name": "level",
+						"value": "master"
+					},
+					{
+						"name": "issueDate",
+						"value": "2023-05-01"
+					},
+					{
+						"name": "diplomaFile",
+						"type": "file",
+						"fileName": "diploma.pdf"
+					}
+				]
+			},
+			"parameters": [],
+			"headers": [],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682971100000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_verify_public_1",
+			"parentId": "fld_diplomas_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/diplomas/verify/0xHASH_BLOCKCHAIN",
+			"name": "Vérification Publique",
+			"description": "Vérifie l'existence d'un diplôme via son hash blockchain sans authentification.",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1682971000000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "fld_blockchain_1",
+			"parentId": "wrk_diplochain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"name": "3. Blockchain",
+			"description": "",
+			"environment": {},
+			"environmentPropertyOrder": null,
+			"metaSortKey": -1682971000000,
+			"_type": "request_group"
+		},
+		{
+			"_id": "req_bc_status_1",
+			"parentId": "fld_blockchain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/blockchain/status",
+			"name": "Statut Blockchain",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1682971200000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_bc_issue_1",
+			"parentId": "fld_blockchain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/blockchain/issue-diploma/ID_DU_DIPLOME",
+			"name": "Émettre sur Blockchain",
+			"description": "Transfère le diplôme sur la blockchain, l'enregistre sur IPFS et notifie l'étudiant.",
+			"method": "POST",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682971100000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_bc_verify_1",
+			"parentId": "fld_blockchain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/blockchain/verify/0xHASH_BLOCKCHAIN",
+			"name": "Vérification On-Chain",
+			"description": "Interroge directement le smart contract pour vérifier l'authenticité.",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1682971000000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_bc_revoke_1",
+			"parentId": "fld_blockchain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/blockchain/revoke/ID_DU_DIPLOME",
+			"name": "Révoquer un Diplôme",
+			"description": "",
+			"method": "PUT",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"reason\": \"Erreur administrative lors de la saisie\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json"
+				}
+			],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682970900000,
+			"isPrivate": false,
+			"_type": "request"
+		},
+		{
+			"_id": "req_bc_authorize_1",
+			"parentId": "fld_blockchain_1",
+			"modified": 1682971200000,
+			"created": 1682971200000,
+			"url": "{{ _.base_url }}/blockchain/authorize-institution/ID_INSTITUTION",
+			"name": "Autoriser Institution (Admin)",
+			"description": "Ajoute l'adresse wallet de l'institution à la liste blanche du smart contract.",
+			"method": "POST",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {
+				"type": "bearer",
+				"token": "{{ _.token }}"
+			},
+			"metaSortKey": -1682970800000,
+			"isPrivate": false,
+			"_type": "request"
+		}
+	]
+}
