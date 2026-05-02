@@ -1,6 +1,7 @@
 # Dossiers locaux à ignorer
 files/
-mobileblock/
+mobile/mobileblock/
+maquettes_diplochain/
 
 # Node.js
 node_modules/
