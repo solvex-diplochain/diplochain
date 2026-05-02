@@ -1,0 +1,64 @@
+.pro-theme { padding-bottom: 100px; max-width: 1000px !important; }
+.pro-header-center { text-align: center; margin-bottom: 60px; }
+.pro-badge-top { display: inline-block; padding: 6px 16px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 16px; }
+
+.pro-multi-step-container { display: flex; flex-direction: column; gap: 40px; }
+
+/* Stepper */
+.pro-stepper { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; position: relative; }
+.step-item { display: flex; flex-direction: column; align-items: center; gap: 12px; position: relative; z-index: 1; flex: 1; }
+.step-circle { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.05); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--text-muted); transition: all 0.4s; }
+.step-item span { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.step-line { position: absolute; top: 22px; left: calc(50% + 22px); width: calc(100% - 44px); height: 2px; background: var(--glass-border); z-index: -1; }
+
+.step-item.active .step-circle { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 0 20px var(--primary-glow); }
+.step-item.active span { color: white; }
+.step-item.completed .step-circle { background: #10b981; border-color: #10b981; color: white; }
+.step-item.completed .step-line { background: #10b981; }
+
+/* Form Wrapper */
+.pro-form-wrapper { padding: 50px; min-height: 500px; border-radius: 32px; background: rgba(15, 23, 42, 0.4); }
+.pro-form-wrap.pro-success-view .success-card { max-width: 600px; text-align: center; padding: 50px; }
+.hash-display-box { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 20px; margin: 25px 0; border: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.hash-display-box .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.blockchain-hash { font-family: 'Courier New', Courier, monospace; color: var(--primary-light); background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 8px; font-size: 0.9rem; word-break: break-all; width: 100%; border: 1px solid rgba(79, 70, 229, 0.2); }
+.btn-copy-sm { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s; }
+.btn-copy-sm:hover { background: var(--primary); color: white; }
+.step-content h3 { font-size: 1.5rem; margin-bottom: 32px; color: var(--primary); }
+.pro-group { margin-bottom: 30px; }
+.pro-group label { display: block; margin-bottom: 12px; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
+
+.pro-select select, .pro-form-wrapper input { width: 100%; padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 16px; color: white; outline: none; font-size: 1rem; transition: all 0.3s; }
+.pro-form-wrapper input:focus, .pro-select select:focus { border-color: var(--primary); background: rgba(255,255,255,0.06); }
+
+.info-box-glass { display: flex; align-items: center; gap: 16px; padding: 20px; background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); border-radius: 16px; color: var(--text-muted); font-size: 0.9rem; margin-top: 40px; }
+
+.pro-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pro-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+.pro-file-upload { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; border: 2px dashed var(--glass-border); border-radius: 24px; cursor: pointer; transition: all 0.3s; gap: 16px; }
+.pro-file-upload:hover { border-color: var(--primary); background: rgba(79, 70, 229, 0.05); }
+.pro-file-upload input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.pro-file-upload span { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+
+/* Review Step */
+.review-card { padding: 32px; border-radius: 24px; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); }
+.review-header { display: flex; gap: 24px; align-items: center; padding-bottom: 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 24px; }
+.review-header h4 { font-size: 1.4rem; margin-bottom: 4px; }
+.subtitle { color: var(--primary); font-weight: 800; font-size: 0.75rem; letter-spacing: 1px; }
+.review-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.review-item { display: flex; flex-direction: column; gap: 4px; }
+.review-item span { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+.blockchain-notice { display: flex; align-items: center; gap: 12px; margin-top: 32px; padding: 16px; background: rgba(16, 185, 129, 0.05); color: #10b981; border-radius: 12px; font-size: 0.85rem; font-weight: 600; }
+
+.step-actions { display: flex; justify-content: space-between; margin-top: 48px; }
+.pro-btn { padding: 14px 28px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.pro-btn-heavy { padding: 16px 40px; border-radius: 16px; background: var(--gradient-main); color: white; border: none; font-weight: 800; cursor: pointer; font-size: 1.1rem; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); }
+
+/* Success View */
+.pro-success-view { height: 80vh; }
+.success-card { padding: 80px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.success-icon-wrapper { position: relative; margin-bottom: 20px; }
+.icon-ring { position: absolute; top: 0; left: 0; width: 100px; height: 100px; border: 2px solid #10b981; border-radius: 50%; }
+.success-actions { display: flex; gap: 20px; }
+.error-box.pro-style { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 20px; border-radius: 16px; margin-top: 32px; display: flex; align-items: center; gap: 12px; }
