@@ -15,7 +15,7 @@ class IpfsService {
    */
   async uploadJSON(data) {
     if (!this.jwt && !this.apiKey) {
-      console.warn('⚠️  IPFS credentials not configured. Simulating upload.');
+      console.warn('IPFS credentials not configured. Simulating upload.');
       return {
         success: true,
         hash: 'Qm' + Math.random().toString(36).substring(2, 48),
@@ -50,7 +50,7 @@ class IpfsService {
    */
   async uploadFile(filePath, fileName) {
     if (!this.jwt && !this.apiKey) {
-      console.warn('⚠️  IPFS credentials not configured. Simulating file upload.');
+      console.warn('  IPFS credentials not configured. Simulating file upload.');
       return {
         success: true,
         hash: 'QmFile' + Math.random().toString(36).substring(2, 44),
@@ -61,7 +61,7 @@ class IpfsService {
     try {
       const formData = new FormData();
       formData.append('file', fs.createReadStream(filePath));
-      
+
       const metadata = JSON.stringify({
         name: fileName || 'diploma_file'
       });

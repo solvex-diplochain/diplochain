@@ -27,6 +27,14 @@ const register = async (req, res, next) => {
 
     const { email, password, firstName, lastName, role, phoneNumber, dateOfBirth } = req.body;
 
+    // Empêcher l'inscription en tant qu'admin via l'API publique
+    if (role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'L\'inscription en tant qu\'administrateur est interdite via ce canal.'
+      });
+    }
+
     // Vérifier si l'utilisateur existe déjà
     const userExists = await User.findByEmail(email);
     if (userExists) {
