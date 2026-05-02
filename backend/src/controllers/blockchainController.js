@@ -1,4 +1,5 @@
 const Diploma = require('../models/Diploma');
+const Institution = require('../models/Institution');
 const blockchainService = require('../services/blockchainService');
 const ipfsService = require('../services/ipfsService');
 const emailService = require('../services/emailService');

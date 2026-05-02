@@ -17,9 +17,9 @@ router.post('/', protect, authorize('institution'), upload.single('diplomaFile')
 // @route   GET /api/diplomes
 router.get('/', protect, getDiplomas);
 
-// @route   GET /api/diplomes/verify/:code
+// @route   GET /api/diplomes/verify/:blockchainHash
 // Note: Le code dans le prompt correspond au blockchainHash
-router.get('/verify/:code', verifyDiplomaByHash);
+router.get('/verify/:blockchainHash', verifyDiplomaByHash);
 
 // @route   GET /api/diplomes/:id
 router.get('/:id', protect, getDiplomaById);
