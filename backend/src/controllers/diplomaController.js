@@ -69,7 +69,7 @@ const createDiploma = async (req, res, next) => {
         const ipfsFile = await ipfsService.uploadFile(req.file.path, req.file.originalname);
         diplomaData.attachments = [{
           name: req.file.originalname,
-          type: req.file.mimetype,
+          fileType: req.file.mimetype,
           url: ipfsFile.url,
           ipfsHash: ipfsFile.hash
         }];
@@ -79,6 +79,7 @@ const createDiploma = async (req, res, next) => {
         // On continue sans le fichier ou avec le chemin local
         diplomaData.attachments = [{
           name: req.file.originalname,
+          fileType: req.file.mimetype,
           url: `/uploads/diplomas/${req.file.filename}`
         }];
       }

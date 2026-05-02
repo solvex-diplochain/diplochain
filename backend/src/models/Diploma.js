@@ -111,8 +111,10 @@ const diplomaSchema = new mongoose.Schema({
   },
   // Pièces jointes
   attachments: [{
-    type: String, // URL du fichier
-    name: String,
+    url: { type: String },
+    fileType: { type: String },
+    name: { type: String },
+    ipfsHash: { type: String },
     uploadedAt: { type: Date, default: Date.now }
   }],
   // Vérifications

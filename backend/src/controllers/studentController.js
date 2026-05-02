@@ -102,7 +102,51 @@ const importStudents = async (req, res, next) => {
   }
 };
 
+// @desc    Créer un étudiant manuellement
+// @route   POST /api/etudiants
+// @access  Private (institution only)
+const createStudent = async (req, res, next) => {
+  try {
+    const { email, firstName, lastName, studentId, major, password } = req.body;
+
+    // Trouver l'institution
+    const institution = await Institution.findOne({ adminUser: req.user._id });
+    if (!institution) {
+      return res.status(404).json({ success: false, message: 'Institution non trouvée' });
+    }
+
+    // Vérifier si l'utilisateur existe déjà
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Un utilisateur avec cet email existe déjà' });
+    }
+
+    // Créer l'étudiant
+    const student = await User.create({
+      email,
+      firstName,
+      lastName,
+      password: password || 'DefaultPass123!',
+      role: 'student',
+      studentProfile: {
+        studentId,
+        major,
+        institution: institution._id
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Étudiant créé avec succès',
+      data: student
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getStudents,
-  importStudents
+  importStudents,
+  createStudent
 };
