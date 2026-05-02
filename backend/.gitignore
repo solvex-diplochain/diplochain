@@ -1,0 +1,20 @@
+# Dépendances
+node_modules/
+
+# Environnement (SÉCURITÉ)
+.env
+.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dossiers système et IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Dossiers de build (si vous utilisez TypeScript)
+dist/
+build/
