@@ -159,8 +159,8 @@ const AddStudent = ({ onStudentAdded }) => {
       <style>{`
         .add-student-container { max-width: 800px; margin: 0 auto; }
         .card-header-pro { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .icon-badge { width: 50px; height: 50px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-        .card-header-pro h3 { font-size: 1.5rem; margin-bottom: 4px; }
+        .icon-badge { width: 50px; height: 50px; background: #f1f5f9; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .card-header-pro h3 { font-size: 1.5rem; margin-bottom: 4px; color: var(--primary); }
         .card-header-pro p { color: var(--text-muted); font-size: 0.9rem; }
 
         .pro-form { display: flex; flex-direction: column; gap: 24px; }
@@ -168,8 +168,8 @@ const AddStudent = ({ onStudentAdded }) => {
         .pro-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
         .input-with-icon { position: relative; display: flex; align-items: center; }
         .input-with-icon svg { position: absolute; left: 16px; color: var(--text-muted); pointer-events: none; }
-        .input-with-icon input { width: 100%; padding: 14px 14px 14px 48px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 14px; color: white; transition: all 0.3s; }
-        .input-with-icon input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); outline: none; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .input-with-icon input { width: 100%; padding: 14px 14px 14px 48px; background: white; border: 1px solid var(--border-light); border-radius: 14px; color: var(--text-main); transition: all 0.3s; }
+        .input-with-icon input:focus { border-color: var(--secondary); background: white; outline: none; box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1); }
 
         .error-msg-pro { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
         .success-msg-pro { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 12px 16px; border-radius: 10px; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }

@@ -110,7 +110,7 @@ const issueDiplomaOnBlockchain = async (req, res, next) => {
 
     // Déterminer l'adresse de l'étudiant
     let studentAddress = diploma.student.walletAddress;
-    
+
     if (!studentAddress) {
       // Si l'étudiant n'a pas d'adresse, on en génère une déterministe pour le test
       // En production, l'étudiant devrait avoir configuré son wallet
@@ -131,15 +131,15 @@ const issueDiplomaOnBlockchain = async (req, res, next) => {
       certificateNumber: diploma.certificateNumber,
       studentName: `${diploma.student.firstName} ${diploma.student.lastName}`
     };
-    
+
     // 1. Uploader sur IPFS
     let metadataURI = '';
     try {
       const ipfsResult = await ipfsService.uploadJSON(metadata);
       metadataURI = ipfsResult.hash; // On stocke juste le hash (CID) sur la blockchain
-      console.log(`✅ Métadonnées uploadées sur IPFS: ${ipfsResult.hash}`);
+      console.log(` Métadonnées uploadées sur IPFS: ${ipfsResult.hash}`);
     } catch (ipfsError) {
-      console.warn('⚠️  Échec de l\'upload IPFS, utilisation du JSON local');
+      console.warn('  Échec de l\'upload IPFS, utilisation du JSON local');
       metadataURI = JSON.stringify(metadata).substring(0, 32); // Fallback limité (pas idéal mais évite le crash)
     }
 
@@ -169,9 +169,9 @@ const issueDiplomaOnBlockchain = async (req, res, next) => {
         diploma.title,
         diploma.verificationUrl
       );
-      console.log(`📧 Notification envoyée à ${diploma.student.email}`);
+      console.log(` Notification envoyée à ${diploma.student.email}`);
     } catch (emailError) {
-      console.error('⚠️  Erreur lors de l\'envoi de l\'email:', emailError.message);
+      console.error('  Erreur lors de l\'envoi de l\'email:', emailError.message);
     }
 
     res.status(200).json({

@@ -21,12 +21,19 @@ const storage = multer.diskStorage({
 
 // Filtre pour les fichiers
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+  const allowedTypes = [
+    'application/pdf', 
+    'image/jpeg', 
+    'image/png',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+    'application/vnd.ms-excel', // .xls
+    'text/csv' // .csv
+  ];
   
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Format de fichier non supporté. Utilisez PDF, JPEG ou PNG.'), false);
+    cb(new Error('Format de fichier non supporté. Utilisez PDF, JPEG, PNG, Excel ou CSV.'), false);
   }
 };
 

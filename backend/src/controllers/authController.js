@@ -65,7 +65,7 @@ const register = async (req, res, next) => {
           isActive: true,
           isVerified: true // On l'active par défaut pour le hackathon
         });
-        console.log(`✅ Profil institution créé pour ${email}`);
+        console.log(` Profil institution créé pour ${email}`);
       } catch (instError) {
         console.error(' Erreur création profil institution:', instError.message);
       }

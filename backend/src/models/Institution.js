@@ -8,6 +8,11 @@ const institutionSchema = new mongoose.Schema({
     unique: true,
     maxlength: [150, 'Le nom ne peut pas dépasser 150 caractères']
   },
+  sigle: {
+    type: String,
+    trim: true,
+    maxlength: [20, 'Le sigle ne peut pas dépasser 20 caractères']
+  },
   type: {
     type: String,
     enum: {
@@ -42,6 +47,7 @@ const institutionSchema = new mongoose.Schema({
   address: {
     street: String,
     city: String,
+    region: String,
     country: String,
     postalCode: String
   },
