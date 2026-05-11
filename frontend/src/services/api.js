@@ -27,6 +27,7 @@ export const getDiplomes = (params) => API.get('/diplomes', { params });
 export const importerEtudiants = (formData) => API.post('/etudiants/import', formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
+export const downloadTemplate = () => API.get('/etudiants/template', { responseType: 'blob' });
 export const createEtudiant = (data) => API.post('/etudiants', data);
 export const getEtudiants = () => API.get('/etudiants');
 

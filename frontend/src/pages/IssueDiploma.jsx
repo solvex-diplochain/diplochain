@@ -16,8 +16,15 @@ import {
   ShieldCheck,
   FileText,
   Calendar,
-  Award
+  Award,
+  Download,
+  Share2,
+  ArrowLeft
 } from 'lucide-react';
+import { QRCodeCanvas } from 'qrcode.react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import CertificateTemplate from '../components/CertificateTemplate';
 import './IssueDiploma.css';
 
 const IssueDiploma = () => {
@@ -84,6 +91,38 @@ const IssueDiploma = () => {
     }
   };
 
+  const generatePDF = async () => {
+    const element = document.getElementById('diploma-certificate');
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 3, // High quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 1122, // A4 landscape width at 96dpi
+        windowHeight: 794
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Diplome_${successData?.student?.lastName}_${successData?.title.replace(/\s+/g, '_')}.pdf`);
+    } catch (err) {
+      console.error('Erreur lors de la génération du PDF:', err);
+      alert('Erreur lors de la génération du PDF');
+    }
+  };
+
   const steps = [
     { id: 1, label: 'Sélection Étudiant', icon: <User size={18} /> },
     { id: 2, label: 'Détails Académiques', icon: <GraduationCap size={18} /> },
@@ -120,9 +159,40 @@ const IssueDiploma = () => {
             </button>
           </div>
 
-          <div className="success-actions">
-            <button onClick={() => navigate('/dashboard')} className="btn-primary pro-btn-lg">Retour au Dashboard</button>
-            <Link to={`/verify/${successData?.blockchainHash}`} className="btn-secondary pro-btn-lg">Vérifier l'Ancrage</Link>
+          <div className="success-actions-grid">
+            <div className="qr-preview-box">
+              <QRCodeCanvas 
+                value={`${window.location.origin}/verify/${successData?.blockchainHash}`} 
+                size={120}
+                level="H"
+                includeMargin={true}
+                className="qr-code-success"
+              />
+              <p>Scan pour vérification mobile</p>
+            </div>
+
+            <div className="action-buttons-group">
+              <button onClick={generatePDF} className="btn-primary pro-btn-lg highlight">
+                <Download size={20} /> Télécharger le Diplôme (PDF)
+              </button>
+              <div className="secondary-btns">
+                <button onClick={() => navigate('/dashboard')} className="btn-outline-pro">
+                  Tableau de bord
+                </button>
+                <Link to={`/verify/${successData?.blockchainHash}`} className="btn-outline-pro">
+                  <Share2 size={18} /> Voir la Preuve
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Hidden Certificate Template for PDF Generation */}
+          <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+            <CertificateTemplate 
+              diploma={successData} 
+              institution={successData?.institution}
+              verificationUrl={`${window.location.origin}/verify/${successData?.blockchainHash}`}
+            />
           </div>
         </motion.div>
       </div>
@@ -133,6 +203,9 @@ const IssueDiploma = () => {
 
   return (
     <div className="issue-page container pro-theme">
+      <button onClick={() => navigate('/dashboard')} className="btn-back-global">
+        <ArrowLeft size={18} /> Retour au Dashboard
+      </button>
       <header className="page-header pro-header-center">
         <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pro-badge-top">Processus d'Émission Sécurisé</motion.span>
         <h1>Émettre un <span className="text-gradient">Diplôme</span> Professionnel</h1>

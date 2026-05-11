@@ -16,11 +16,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="glass sticky-nav">
+    <nav className="sticky-nav">
       <div className="container nav-content">
         <Link to="/" className="logo">
           <Shield className="logo-icon" size={32} />
-          <span>Diplo<span className="text-gradient">Chain</span></span>
+          <span>DiploChain</span>
         </Link>
 
         {/* Desktop Nav */}

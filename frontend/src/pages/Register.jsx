@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import API from '../services/api';
-import { User, Mail, Lock, UserPlus, ShieldAlert, GraduationCap, Building, Briefcase } from 'lucide-react';
+import { User, Mail, Lock, UserPlus, ShieldAlert, GraduationCap, Building, Briefcase, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Register = () => {
@@ -36,6 +36,9 @@ const Register = () => {
 
   return (
     <div className="auth-page container">
+      <button onClick={() => navigate('/')} className="btn-back-global" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+        <ArrowLeft size={18} /> Accueil
+      </button>
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -153,15 +156,15 @@ const Register = () => {
         .auth-icon-circle { width: 64px; height: 64px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
         
         .role-selector { display: flex; gap: 12px; margin-bottom: 24px; }
-        .role-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; }
-        .role-btn.active { background: rgba(79, 70, 229, 0.1); border-color: var(--primary); color: white; }
+        .role-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; background: #f1f5f9; border: 1px solid var(--border-light); border-radius: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.3s ease; }
+        .role-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
         
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .input-group { margin-bottom: 20px; }
         .input-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
         .input-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
-        .input-wrapper { position: relative; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; }
-        input { background: transparent; border: 1px solid var(--glass-border); border-radius: 12px; color: white; padding: 12px 16px; flex: 1; outline: none; width: 100%; }
+        .input-wrapper { position: relative; background: white; border: 1px solid var(--border-light); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; }
+        input { background: white; border: 1px solid var(--border-light); border-radius: 12px; color: var(--text-main); padding: 12px 16px; flex: 1; outline: none; width: 100%; }
         .input-wrapper input { border: none; padding: 12px 0; }
         .input-icon { color: var(--text-muted); margin-right: 12px; }
         .w-full { width: 100%; justify-content: center; margin-top: 10px; }

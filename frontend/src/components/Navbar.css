@@ -1,9 +1,14 @@
 .sticky-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
   padding: 16px 0;
-  margin-bottom: 20px;
+  background-color: var(--primary); /* Navy Blue */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
 }
 .nav-content {
   display: flex;
@@ -21,7 +26,7 @@
   font-family: 'Outfit', sans-serif;
 }
 .logo-icon {
-  color: var(--primary);
+  color: var(--secondary);
 }
 .nav-links {
   display: flex;
@@ -30,29 +35,31 @@
 }
 .nav-item {
   text-decoration: none;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 .nav-item:hover {
-  color: var(--text-main);
+  color: white;
 }
 .user-menu {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 6px 16px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .user-name {
   font-size: 0.9rem;
   font-weight: 600;
+  color: white;
 }
 .btn-icon {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   display: flex;
   transition: color 0.3s ease;
@@ -80,7 +87,15 @@
   flex-direction: column;
   padding: 20px;
   gap: 15px;
-  margin-top: 10px;
+  margin-top: 0;
+  background: var(--primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-md);
+}
+.mobile-menu a, .mobile-menu button {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
 }
 @media (max-width: 768px) {
   .nav-links { display: none; }

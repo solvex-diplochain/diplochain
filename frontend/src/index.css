@@ -1,31 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette - Deep Ocean & Electric Blue */
-  --primary: #4f46e5;
-  --primary-glow: rgba(79, 70, 229, 0.4);
-  --secondary: #0ea5e9;
-  --accent: #8b5cf6;
+  /* New Professional Theme - Navy, White, Orange */
+  --primary: #1e293b;
+  --primary-light: #334155;
+  --secondary: #f59e0b;
+  --accent: #f59e0b;
   
-  --bg-dark: #0f172a;
-  --bg-card: rgba(30, 41, 59, 0.7);
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
   
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --border-light: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   
-  --gradient-main: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
-  --gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
   
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: dark;
+  color-scheme: light;
   color: var(--text-main);
-  background-color: var(--bg-dark);
+  background-color: var(--bg-main);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -41,40 +42,47 @@
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+  background-color: var(--bg-main);
   overflow-x: hidden;
+}
+
+main {
+  padding-top: 80px; /* Offset for fixed navbar */
+}
+
+.no-global-layout main {
+  padding-top: 0;
 }
 
 h1, h2, h3, h4 {
   font-family: 'Outfit', sans-serif;
+  color: var(--primary);
 }
 
-/* Glassmorphism Utility */
+/* Updated Utility Classes */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
+  background: white;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-sm);
 }
 
 .glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  background: white;
+  border: 1px solid var(--border-light);
   border-radius: 24px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .glass-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px var(--primary-glow);
+  box-shadow: var(--shadow-md);
 }
 
 /* Buttons */
 .btn-primary {
-  background: var(--gradient-main);
+  background-color: var(--secondary);
   color: white;
   padding: 12px 28px;
   border-radius: 12px;
@@ -85,49 +93,45 @@ h1, h2, h3, h4 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .btn-primary:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px var(--primary-glow);
-  filter: brightness(1.1);
+  background-color: #d97706;
+  transform: scale(1.02);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: var(--text-main);
+  background-color: white;
+  color: var(--primary);
   padding: 12px 28px;
   border-radius: 12px;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--border-light);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(4px);
 }
 
 .btn-secondary:hover {
-  background: var(--glass-bg);
-  border-color: var(--primary);
+  background-color: #f1f5f9;
 }
 
-/* Text Gradients */
-.text-gradient {
-  background: var(--gradient-main);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.btn-back-global {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 0;
+  transition: all 0.2s;
+  margin-bottom: 20px;
 }
 
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.float {
-  animation: float 4s ease-in-out infinite;
+.btn-back-global:hover {
+  color: var(--secondary);
+  transform: translateX(-5px);
 }
 
 /* Layout */

@@ -24,11 +24,16 @@ const Dashboard = () => {
     try {
       const statsRes = await API.get('/stats');
       
-      let extraData = { diplomas: [], institutions: [] };
+      let extraData = { diplomas: [], institutions: [], students: [] };
       
       if (user?.role === 'admin') {
         const instRes = await API.get('/institutions');
         extraData.institutions = instRes.data.data.institutions;
+      }
+
+      if (user?.role === 'institution') {
+        const studentsRes = await API.get('/etudiants');
+        extraData.students = studentsRes.data.data;
       }
       
       const diplomasRes = await API.get('/diplomes');
@@ -66,7 +71,7 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="dashboard-wrapper container">
+    <div className={`dashboard-wrapper ${user ? '' : 'container'}`}>
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }}

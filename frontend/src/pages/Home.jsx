@@ -29,7 +29,7 @@ const Home = () => {
             className="hero-text"
           >
             <span className="badge">Blockchain DiploChain</span>
-            <h1>La confiance académique ancrée dans la <span className="text-gradient">Blockchain</span></h1>
+            <h1>La confiance académique ancrée dans la Blockchain</h1>
             <p>Une plateforme décentralisée pour émettre, stocker et vérifier des diplômes infalsifiables en quelques secondes.</p>
             <div className="hero-actions">
               <Link to="/verify" className="btn-primary">
@@ -76,7 +76,7 @@ const Home = () => {
       <section className="how-it-works">
         <div className="container">
           <div className="section-header">
-            <h2>Comment ça <span className="text-gradient">marche</span> ?</h2>
+            <h2>Comment ça marche ?</h2>
             <p>Un processus simple pour une sécurité maximale.</p>
           </div>
           <div className="steps-grid">
@@ -91,7 +91,7 @@ const Home = () => {
       <section className="actors-section">
         <div className="container">
           <div className="section-header">
-            <h2>Une plateforme pour <span className="text-gradient">tous</span></h2>
+            <h2>Une plateforme pour tous</h2>
           </div>
           <div className="actors-grid">
             <ActorCard icon={<GraduationCap />} title="Étudiants" desc="Gérez vos diplômes à vie et partagez-les en un clic." />
@@ -121,7 +121,7 @@ const Home = () => {
         .quick-stats { margin-top: -40px; position: relative; z-index: 10; padding: 30px 0; border-radius: 0; border-left: none; border-right: none; }
         .stats-container { display: flex; justify-content: space-around; }
         .stat-box { display: flex; flex-direction: column; align-items: center; }
-        .stat-box strong { font-size: 1.8rem; color: white; }
+        .stat-box strong { font-size: 1.8rem; color: var(--primary); }
         .stat-box span { color: var(--text-muted); font-size: 0.9rem; }
         
         .section-header { text-align: center; margin-bottom: 60px; }
@@ -151,7 +151,7 @@ const StepCard = ({ icon, num, title, desc }) => (
     <style>{`
       .step-card { padding: 40px; text-align: center; position: relative; }
       .step-num { position: absolute; top: 20px; right: 20px; font-size: 2rem; font-weight: 900; opacity: 0.1; }
-      .step-icon { width: 64px; height: 64px; background: rgba(79, 70, 229, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); margin: 0 auto 24px; }
+      .step-icon { width: 64px; height: 64px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--secondary); margin: 0 auto 24px; }
       h3 { margin-bottom: 12px; }
       p { color: var(--text-muted); font-size: 0.95rem; }
     `}</style>

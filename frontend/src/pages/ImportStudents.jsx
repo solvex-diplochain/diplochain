@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { importerEtudiants } from '../services/api';
+import { importerEtudiants, downloadTemplate } from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Upload, 
@@ -24,6 +24,25 @@ const ImportStudents = () => {
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const navigate = useNavigate();
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadTemplate = async () => {
+    setDownloading(true);
+    try {
+      const response = await downloadTemplate();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'modele_import_etudiants.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      setError('Erreur lors du téléchargement du modèle');
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -74,7 +93,7 @@ const ImportStudents = () => {
   return (
     <div className="import-page container pro-theme-import">
       <header className="page-header pro-header-center">
-        <button onClick={() => navigate('/dashboard')} className="btn-back-pro">
+        <button onClick={() => navigate('/dashboard')} className="btn-back-global">
           <ArrowLeft size={18} /> Retour au Dashboard
         </button>
         <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pro-badge-top">Outil d'Administration</motion.span>
@@ -102,7 +121,14 @@ const ImportStudents = () => {
               <div className="format-item"><strong>major</strong> <span>Filière ou Spécialité</span></div>
             </div>
             <div className="pro-download-template">
-               <button className="btn-secondary-sm w-full"><Download size={16} /> Télécharger le modèle .xlsx</button>
+               <button 
+                type="button" 
+                onClick={handleDownloadTemplate} 
+                className="btn-secondary-sm w-full"
+                disabled={downloading}
+               >
+                 <Download size={16} /> {downloading ? 'Téléchargement...' : 'Télécharger le modèle .xlsx'}
+               </button>
             </div>
           </motion.div>
 

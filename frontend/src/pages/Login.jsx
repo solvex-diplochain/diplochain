@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, LogIn, ShieldAlert } from 'lucide-react';
+import { Mail, Lock, LogIn, ShieldAlert, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Login = () => {
@@ -29,6 +29,9 @@ const Login = () => {
 
   return (
     <div className="auth-page container">
+      <button onClick={() => navigate('/')} className="btn-back-global" style={{ position: 'absolute', top: '20px', left: '20px' }}>
+        <ArrowLeft size={18} /> Accueil
+      </button>
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -101,15 +104,16 @@ const Login = () => {
         .auth-header { text-align: center; margin-bottom: 24px; }
         .auth-icon-circle { width: 56px; height: 56px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
         
-        .role-tabs { display: flex; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 12px; margin-bottom: 32px; border: 1px solid var(--glass-border); }
+        .role-tabs { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; margin-bottom: 32px; border: 1px solid var(--border-light); }
         .role-tab { flex: 1; border: none; background: none; color: var(--text-muted); padding: 10px 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; }
-        .role-tab.active { background: var(--primary); color: white; box-shadow: 0 4px 12px var(--primary-glow); }
-        .input-wrapper:focus-within { border-color: var(--primary); }
+        .role-tab.active { background: var(--primary); color: white; }
+        .input-wrapper { display: flex; align-items: center; border: 1px solid var(--border-light); border-radius: 12px; padding: 0 16px; background: white; }
+        .input-wrapper:focus-within { border-color: var(--secondary); box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
         .input-icon { color: var(--text-muted); margin-right: 12px; }
         input {
           background: transparent;
           border: none;
-          color: white;
+          color: var(--text-main);
           padding: 14px 0;
           flex: 1;
           outline: none;
