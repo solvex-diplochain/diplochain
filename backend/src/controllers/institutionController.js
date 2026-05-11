@@ -167,10 +167,50 @@ const getInstitutionDiplomas = async (req, res, next) => {
   }
 };
 
+const getMyInstitution = async (req, res, next) => {
+  try {
+    const institution = await Institution.findOne({ adminUser: req.user._id });
+    if (!institution) {
+      return res.status(404).json({ success: false, message: 'Profil institution non trouvé' });
+    }
+    res.status(200).json({ success: true, data: institution });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateMyInstitution = async (req, res, next) => {
+  try {
+    const institution = await Institution.findOne({ adminUser: req.user._id });
+    if (!institution) {
+      return res.status(404).json({ success: false, message: 'Profil institution non trouvé' });
+    }
+
+    const allowedFields = ['name', 'sigle', 'type', 'phone', 'website', 'logo', 'address', 'description', 'contactPerson'];
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        institution[field] = req.body[field];
+      }
+    });
+
+    await institution.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profil institution mis à jour avec succès',
+      data: institution
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getInstitutions,
   getInstitutionById,
   createInstitution,
   updateInstitution,
-  getInstitutionDiplomas
+  getInstitutionDiplomas,
+  getMyInstitution,
+  updateMyInstitution
 };

@@ -18,3 +18,4 @@ yarn-error.log*
 # Dossiers de build (si vous utilisez TypeScript)
 dist/
 build/
+backend/uploads/diplomas/*.pdf

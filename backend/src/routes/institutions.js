@@ -6,7 +6,9 @@ const {
   getInstitutionById,
   createInstitution,
   updateInstitution,
-  getInstitutionDiplomas
+  getInstitutionDiplomas,
+  getMyInstitution,
+  updateMyInstitution
 } = require('../controllers/institutionController');
 
 const router = express.Router();
@@ -55,6 +57,8 @@ const updateValidation = [
 ];
 
 router.get('/', getInstitutions);
+router.get('/my-profile', protect, authorize('institution'), getMyInstitution);
+router.put('/my-profile', protect, authorize('institution'), updateValidation, updateMyInstitution);
 router.post('/', protect, authorize('institution'), createValidation, createInstitution);
 router.get('/:id', getInstitutionById);
 router.put('/:id', protect, updateValidation, updateInstitution);
