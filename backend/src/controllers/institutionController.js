@@ -205,6 +205,34 @@ const updateMyInstitution = async (req, res, next) => {
   }
 };
 
+const uploadLogoInstitution = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Aucun fichier image fourni' });
+    }
+
+    const institution = await Institution.findOne({ adminUser: req.user._id });
+    if (!institution) {
+      return res.status(404).json({ success: false, message: 'Institution non trouvée' });
+    }
+
+    // Build the public URL for the uploaded logo
+    const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 5000}`;
+    const logoUrl = `${backendUrl}/uploads/diplomas/${req.file.filename}`;
+
+    institution.logo = logoUrl;
+    await institution.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Logo téléchargé avec succès',
+      data: { logoUrl }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getInstitutions,
   getInstitutionById,
@@ -212,5 +240,6 @@ module.exports = {
   updateInstitution,
   getInstitutionDiplomas,
   getMyInstitution,
-  updateMyInstitution
-};
+  updateMyInstitution,
+  uploadLogoInstitution
+};

@@ -58,6 +58,10 @@ app.use('/api/auth/register', authLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Servir les fichiers uploadés (logos, documents)
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Routes API
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

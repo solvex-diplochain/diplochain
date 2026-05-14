@@ -25,13 +25,29 @@ const Verify = () => {
 
   const handleVerify = async (hashToVerify) => {
     if (!hashToVerify) return;
+    
+    // Si l'utilisateur colle l'URL complète au lieu du hash seul, on extrait le hash
+    let cleanHash = hashToVerify;
+    try {
+      if (cleanHash.includes('http')) {
+        const urlObj = new URL(cleanHash);
+        const paths = urlObj.pathname.split('/');
+        cleanHash = paths[paths.length - 1];
+      } else if (cleanHash.includes('/verify/')) {
+        const paths = cleanHash.split('/verify/');
+        cleanHash = paths[paths.length - 1];
+      }
+    } catch (e) {
+      // Ignorer si ce n'est pas une URL valide
+    }
+
     setLoading(true);
     setError('');
     setResult(null);
 
     try {
       // Appel à l'API de vérification
-      const response = await API.get(`/diplomes/verify/${hashToVerify}`);
+      const response = await API.get(`/diplomes/verify/${cleanHash}`);
       setResult(response.data);
     } catch (err) {
       console.error(err);

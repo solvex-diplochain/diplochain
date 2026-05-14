@@ -36,7 +36,8 @@ import {
   ShieldCheck as ShieldIcon,
   Activity,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  X
 } from 'lucide-react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -46,12 +47,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from './DashboardLayout';
 import AddStudent from './AddStudent';
 import StudentList from './StudentList';
+import CertificateTemplate from '../CertificateTemplate';
 import API from '../../services/api';
 
 const InstitutionDashboard = ({ user, data }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [settingsTab, setSettingsTab] = useState('profile');
   const [timeFilter, setTimeFilter] = useState('30days');
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedDiploma, setSelectedDiploma] = useState(null);
   const [profile, setProfile] = useState({
     name: user?.name || 'Université de Ouagadougou',
     sigle: 'UO',
@@ -61,9 +65,13 @@ const InstitutionDashboard = ({ user, data }) => {
     adresse: "Avenue de l'Université, Secteur 4",
     website: 'https://www.uo.bf',
     email: 'contact@uo.bf',
-    phone: '+226 25 30 XX XX'
+    phone: '+226 25 30 XX XX',
+    logo: null
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoUploadSuccess, setLogoUploadSuccess] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(true);
   const navigate = useNavigate();
 
@@ -82,7 +90,8 @@ const InstitutionDashboard = ({ user, data }) => {
             adresse: inst.address?.street || '',
             website: inst.website || '',
             email: inst.email || '',
-            phone: inst.phone || ''
+            phone: inst.phone || '',
+            logo: inst.logo || null
           });
         }
       } catch (error) {
@@ -109,7 +118,6 @@ const InstitutionDashboard = ({ user, data }) => {
         },
         website: profile.website,
         phone: profile.phone
-        // Email is usually not updatable via this form for security
       };
 
       const response = await API.put('/institutions/my-profile', updateData);
@@ -121,6 +129,44 @@ const InstitutionDashboard = ({ user, data }) => {
       alert(error.response?.data?.message || 'Erreur lors de la mise à jour du profil');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Reset file input so we can select the same file again if needed
+    e.target.value = '';
+
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowed.includes(file.type)) {
+      alert('Format non supporté. Utilisez PNG, JPG, GIF, WEBP ou SVG.');
+      return;
+    }
+    // Preview immediately
+    const reader = new FileReader();
+    reader.onload = (ev) => setLogoPreview(ev.target.result);
+    reader.readAsDataURL(file);
+
+    // Upload to backend
+    setIsUploadingLogo(true);
+    setLogoUploadSuccess('');
+    try {
+      const formData = new FormData();
+      formData.append('logo', file);
+      const res = await API.post('/institutions/my-profile/upload-logo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.success) {
+        setProfile(prev => ({ ...prev, logo: res.data.data.logoUrl }));
+        setLogoUploadSuccess('Logo mis à jour avec succès !');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Erreur lors de l\'upload du logo');
+      setLogoPreview(null);
+    } finally {
+      setIsUploadingLogo(false);
     }
   };
 
@@ -212,7 +258,7 @@ const InstitutionDashboard = ({ user, data }) => {
                      <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
                      <td>{d.title}</td>
                      <td>{new Date(d.issueDate).toLocaleDateString()}</td>
-                     <td><span className="univ-status-badge registered"><CheckCircle size={12} /> {d.status}</span></td>
+                     <td><span className="univ-status-badge registered"><CheckCircle size={12} /> {d.status}</span><button className="univ-btn-outline" style={{ padding: '2px 6px', fontSize: '0.7rem', marginLeft: '8px' }} onClick={() => { setSelectedDiploma(d); setShowPreview(true); }}><Award size={12} /> Voir</button></td>
                    </tr>
                  ))}
                </tbody>
@@ -295,7 +341,18 @@ const InstitutionDashboard = ({ user, data }) => {
                           <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
                           <td>{d.title}</td>
                           <td>{new Date(d.issueDate).toLocaleDateString()}</td>
-                          <td><button className="univ-btn-outline" style={{ padding: '4px' }}><ExternalLink size={16} /></button></td>
+                          <td>
+                            <button 
+                              className="univ-btn-outline" 
+                              style={{ padding: '4px' }}
+                              onClick={() => {
+                                setSelectedDiploma(d);
+                                setShowPreview(true);
+                              }}
+                            >
+                              <ExternalLink size={16} />
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -487,10 +544,42 @@ const InstitutionDashboard = ({ user, data }) => {
                         <div className="logo-upload-section">
                           <div className="logo-preview-wrapper">
                             <div className="logo-placeholder">
-                              <img src="https://via.placeholder.com/120?text=LOGO" alt="Logo" />
-                              <button className="logo-edit-btn"><Pencil size={14} /></button>
+                              {(logoPreview || profile.logo) ? (
+                                <img 
+                                  src={logoPreview || profile.logo} 
+                                  alt="Logo Institution" 
+                                  style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '8px' }}
+                                />
+                              ) : (
+                                <div style={{ width: '120px', height: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', borderRadius: '8px', border: '2px dashed #cbd5e1', cursor: 'pointer' }}>
+                                  <Upload size={28} color="#94a3b8" />
+                                  <span style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: '6px', textAlign: 'center' }}>Aucun logo</span>
+                                </div>
+                              )}
+                              <label className="logo-edit-btn" htmlFor="logo-file-input" style={{ cursor: 'pointer' }}>
+                                {isUploadingLogo ? '...' : <Pencil size={14} />}
+                              </label>
+                              <input 
+                                id="logo-file-input"
+                                type="file" 
+                                accept="image/*" 
+                                style={{ display: 'none' }}
+                                onChange={handleLogoUpload}
+                              />
                             </div>
-                            <button className="univ-btn-text">Changer le logo</button>
+                            <label 
+                              htmlFor="logo-file-input" 
+                              className="univ-btn-text"
+                              style={{ cursor: 'pointer', display: 'block', textAlign: 'center', marginTop: '8px' }}
+                            >
+                              {isUploadingLogo ? 'Envoi en cours...' : 'Changer le logo'}
+                            </label>
+                            {logoUploadSuccess && (
+                              <div style={{ fontSize: '0.75rem', color: '#059669', marginTop: '4px', textAlign: 'center', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+                                <CheckCircle size={12} /> {logoUploadSuccess}
+                              </div>
+                            )}
+                            <p style={{ fontSize: '0.65rem', color: '#94a3b8', textAlign: 'center', margin: '4px 0 0', lineHeight: 1.4 }}>PNG, JPG ou SVG<br />Max 5 Mo</p>
                           </div>
                         </div>
 
@@ -646,6 +735,133 @@ const InstitutionDashboard = ({ user, data }) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Diploma Preview Modal */}
+      <AnimatePresence>
+        {showPreview && selectedDiploma && (
+          <div className="modal-overlay" onClick={() => setShowPreview(false)}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="modal-content-cert" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header-cert">
+                <h3>Aperçu du Diplôme</h3>
+                <button className="close-btn" onClick={() => setShowPreview(false)}>
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="modal-body-cert">
+                <CertificateTemplate 
+                  diploma={selectedDiploma}
+                  institution={profile}
+                  verificationUrl={`${window.location.origin}/verify/${selectedDiploma.blockchainHash}`}
+                />
+              </div>
+              <div className="modal-footer-cert">
+                <p className="hint">Ce diplôme est certifié sur la blockchain. Le code QR permet une vérification instantanée.</p>
+                <button className="univ-btn-primary" onClick={() => window.print()}>
+                  <Download size={18} /> Imprimer le Diplôme
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <style>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.75);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          padding: 40px;
+          backdrop-filter: blur(5px);
+        }
+        .modal-content-cert {
+          background: white;
+          border-radius: 16px;
+          width: 100%;
+          max-width: 1200px;
+          max-height: 90vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .modal-header-cert {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 30px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .modal-header-cert h3 {
+          margin: 0;
+          font-size: 1.25rem;
+          color: #1e293b;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #64748b;
+          transition: color 0.2s;
+        }
+        .close-btn:hover {
+          color: #ef4444;
+        }
+        .modal-body-cert {
+          flex: 1;
+          overflow-y: auto;
+          padding: 40px;
+          background: #f8fafc;
+          display: flex;
+          justify-content: center;
+        }
+        .modal-footer-cert {
+          padding: 20px 30px;
+          border-top: 1px solid #f1f5f9;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modal-footer-cert .hint {
+          font-size: 0.85rem;
+          color: #64748b;
+          margin: 0;
+        }
+        
+        @media print {
+          .dashboard-layout, .modal-overlay, .modal-header-cert, .modal-footer-cert {
+            display: none !important;
+          }
+          .modal-overlay {
+            position: relative;
+            background: none;
+            padding: 0;
+          }
+          .modal-content-cert {
+            box-shadow: none;
+            max-height: none;
+          }
+          .modal-body-cert {
+            padding: 0;
+            background: white;
+          }
+          body {
+            background: white;
+          }
+        }
+      `}</style>
     </DashboardLayout>
   );
 };

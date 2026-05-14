@@ -84,6 +84,20 @@ class EmailService {
       return { success: false, error: error.message };
     }
   }
+
+  /**
+   * Send simulated email with default password to student
+   */
+  async sendDefaultPasswordEmail(studentEmail, studentName, password) {
+    console.log('====================================================');
+    console.log(`📧 SIMULATED EMAIL SENT TO: ${studentEmail}`);
+    console.log(`👤 STUDENT: ${studentName}`);
+    console.log(`🔐 DEFAULT PASSWORD: ${password}`);
+    console.log('====================================================');
+    console.log('Message: Bonjour, voici votre mot de passe pour accéder à DiploChain. Veuillez le changer après votre première connexion.');
+    
+    return { success: true, simulated: true };
+  }
 }
 
 module.exports = new EmailService();

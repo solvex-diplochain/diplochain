@@ -57,10 +57,10 @@ const createDiploma = async (req, res, next) => {
       field: req.body.field,
       level: req.body.level,
       issueDate: req.body.issueDate,
-      expiryDate: req.body.expiryDate,
+      expiryDate: req.body.expiryDate || undefined,
       grade: req.body.grade,
-      gpa: req.body.gpa,
-      creditsEarned: req.body.creditsEarned
+      gpa: req.body.gpa ? parseFloat(req.body.gpa) : undefined,
+      creditsEarned: req.body.creditsEarned ? parseInt(req.body.creditsEarned, 10) : undefined
     };
 
     // Gérer l'upload de fichier si présent

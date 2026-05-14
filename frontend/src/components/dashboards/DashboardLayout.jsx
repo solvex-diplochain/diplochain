@@ -1,16 +1,17 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Building, 
-  ChevronRight, 
-  LogOut, 
-  UserCircle, 
+import {
+  Building,
+  ChevronRight,
+  LogOut,
+  UserCircle,
   Award,
   ShieldCheck,
   User,
   GraduationCap,
   Briefcase,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Home
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -54,17 +55,26 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
     <div className="actor-dashboard univ-theme">
       {/* Top Header */}
       <header className="univ-header">
-        <div className="univ-logo-section">
+        <div className="univ-logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
           <Award size={28} />
           <span>DiploChain</span>
         </div>
         <div className="univ-header-center">
           {getHeaderTitle()}
         </div>
-        <div className="univ-user-profile">
-          <UserCircle size={24} />
-          <span>{user?.firstName || user?.name || 'Mon Profil'}</span>
-          <ChevronRight size={16} />
+        <div className="univ-user-profile" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#f8fafc', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }}
+          >
+            <Home size={18} />
+            <span>Accueil</span>
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '24px', borderLeft: '1px solid rgba(255,255,255,0.2)' }}>
+            <UserCircle size={24} />
+            <span>{user?.firstName || user?.name || 'Mon Profil'}</span>
+            <ChevronRight size={16} />
+          </div>
         </div>
       </header>
 
@@ -83,8 +93,8 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
 
           <nav className="univ-nav">
             {tabs.map(tab => (
-              <button 
-                key={tab.id} 
+              <button
+                key={tab.id}
                 className={`univ-nav-item ${activeTab === tab.id ? 'active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
               >
@@ -102,10 +112,10 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
         {/* Main Content */}
         <main className="univ-main">
           <AnimatePresence mode="wait">
-            <motion.div 
+            <motion.div
               key={activeTab}
-              initial={{ opacity: 0, y: 10 }} 
-              animate={{ opacity: 1, y: 0 }} 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               className="fade-container"
             >
@@ -114,11 +124,6 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
           </AnimatePresence>
         </main>
       </div>
-
-      {/* Footer */}
-      <footer className="univ-footer">
-        DiploChain © 2026 — MIABE Hackathon — Burkina Faso
-      </footer>
     </div>
   );
 };

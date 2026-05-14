@@ -6,78 +6,142 @@ import './CertificateTemplate.css';
 const CertificateTemplate = ({ diploma, institution, verificationUrl }) => {
   if (!diploma) return null;
 
+  // Ensure QR code always has a valid non-empty value
+  const qrValue = verificationUrl ||
+    `${window.location.origin}/verify/${diploma.blockchainHash}` ||
+    `${window.location.origin}/verify/DEMO`;
+
+  const studentName = diploma.student
+    ? `${diploma.student.firstName || ''} ${diploma.student.lastName || ''}`.trim()
+    : 'Étudiant';
+
+  const issueDate = diploma.issueDate
+    ? new Date(diploma.issueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
+    : new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
   return (
     <div id="diploma-certificate" className="certificate-container">
-      <div className="certificate-border">
-        <div className="certificate-inner-border">
+      {/* Outer decorative border */}
+      <div className="cert-outer-frame">
+        <div className="cert-inner-frame">
+
+          {/* Corner ornaments */}
+          <div className="corner corner-tl">✦</div>
+          <div className="corner corner-tr">✦</div>
+          <div className="corner corner-bl">✦</div>
+          <div className="corner corner-br">✦</div>
+
           {/* Header */}
           <div className="cert-header">
-            <div className="cert-logo">
-              <GraduationCap size={60} color="#1e293b" />
-            </div>
-            <div className="cert-title-section">
-              <h1>DIPLÔME D'EXCELLENCE</h1>
-              <h3>ATTESTATION DE RÉUSSITE ACADÉMIQUE</h3>
-            </div>
-          </div>
-
-          {/* Content */}
-          <div className="cert-content">
-            <p className="cert-intro">L'institution</p>
-            <h2 className="cert-institution-name">{institution?.name || 'Université DiploChain'}</h2>
-            <p className="cert-intro">certifie que</p>
-            <h2 className="cert-student-name">
-              {diploma.student?.firstName} {diploma.student?.lastName}
-            </h2>
-            <p className="cert-text">
-              a complété avec succès les exigences requises pour l'obtention du
-            </p>
-            <h3 className="cert-degree-title">{diploma.title}</h3>
-            <p className="cert-field">Filière : {diploma.field}</p>
-          </div>
-
-          {/* Footer / Verification Area */}
-          <div className="cert-footer">
-            <div className="cert-signatures">
-              <div className="signature-box">
-                <div className="sig-line"></div>
-                <span>Le Recteur</span>
-              </div>
-              <div className="seal-box">
-                <div className="cert-seal">
-                  <Award size={40} color="#b45309" />
-                  <span className="seal-text">SCEAU OFFICIEL</span>
+            <div className="cert-logo-zone">
+              {institution?.logo ? (
+                <img src={institution.logo} alt="Logo Institution" className="inst-logo-img" crossOrigin="anonymous" />
+              ) : (
+                <div className="cert-logo-default">
+                  <GraduationCap size={56} color="#1e293b" />
                 </div>
-              </div>
-              <div className="signature-box">
-                <div className="sig-line"></div>
-                <span>Le Doyen</span>
-              </div>
+              )}
             </div>
 
-            <div className="cert-blockchain-info">
-              <div className="qr-section">
-                <QRCodeCanvas 
-                  value={verificationUrl} 
-                  size={120} 
+            <div className="cert-titles">
+              <div className="cert-country">BURKINA FASO</div>
+              <div className="cert-ministry">Ministère de l'Enseignement Supérieur</div>
+              <div className="cert-org-name">{institution?.name || 'Université DiploChain'}</div>
+              {institution?.sigle && <div className="cert-sigle">{institution.sigle}</div>}
+            </div>
+
+            <div className="cert-emblem-zone">
+              <div className="cert-seal-emblem">
+                <Award size={48} color="#b45309" />
+                <span>SCEAU OFFICIEL</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Title band */}
+          <div className="cert-title-band">
+            <div className="cert-title-line"></div>
+            <h1 className="cert-main-title">DIPLÔME</h1>
+            <div className="cert-title-line"></div>
+          </div>
+          <div className="cert-subtitle-text">ATTESTATION DE RÉUSSITE ACADÉMIQUE</div>
+
+          {/* Main content */}
+          <div className="cert-body">
+            <p className="cert-pretext">L'institution certifie que</p>
+
+            <h2 className="cert-student-name">{studentName}</h2>
+
+            <p className="cert-pretext">a satisfait à toutes les exigences requises pour l'obtention du</p>
+
+            <div className="cert-degree-box">
+              <h3 className="cert-degree-title">{diploma.title || 'Diplôme Universitaire'}</h3>
+              <div className="cert-degree-details">
+                {diploma.field && <span className="cert-field-tag">Filière : {diploma.field}</span>}
+                {diploma.level && <span className="cert-level-tag">{diploma.level.toUpperCase()}</span>}
+                {diploma.grade && <span className="cert-grade-tag">Mention : {diploma.grade}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Signatures */}
+          <div className="cert-signatures-row">
+            <div className="cert-sig-block">
+              <div className="cert-sig-line"></div>
+              <span className="cert-sig-title">Le President</span>
+              <span className="cert-sig-name">{institution?.name ? `${institution.name.substring(0, 20)}` : ''}</span>
+            </div>
+
+            <div className="cert-date-center">
+              <span className="cert-date-label">Délivré le</span>
+              <span className="cert-date-value">{issueDate}</span>
+            </div>
+
+            <div className="cert-sig-block">
+              <div className="cert-sig-line"></div>
+              <span className="cert-sig-title">Le Secretaire General</span>
+              <span className="cert-sig-name">Faculté concernée</span>
+            </div>
+          </div>
+
+          {/* Security strip — QR code always visible */}
+          <div className="cert-security-strip">
+            <div className="cert-qr-zone">
+              <div className="cert-qr-border">
+                <QRCodeCanvas
+                  value={qrValue}
+                  size={90}
                   level="H"
-                  includeMargin={true}
+                  includeMargin={false}
+                  bgColor="#ffffff"
+                  fgColor="#1e293b"
                 />
-                <span className="qr-hint">Scanner pour vérifier</span>
               </div>
-              <div className="blockchain-badge">
-                <div className="badge-header">
-                  <ShieldCheck size={20} />
-                  <span>SÉCURISÉ PAR BLOCKCHAIN</span>
-                </div>
-                <div className="hash-display">
-                  <span className="hash-label">ID Blockchain :</span>
-                  <code className="hash-value">{diploma.blockchainHash}</code>
-                </div>
-                <p className="cert-date">Délivré le : {new Date(diploma.issueDate).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+              <div className="cert-qr-label">
+                <span className="qr-scan-text"> SCANNER POUR VÉRIFIER</span>
+                <span className="qr-scan-sub">Vérification blockchain instantanée</span>
+              </div>
+            </div>
+
+            <div className="cert-hash-zone">
+              <div className="cert-hash-header">
+                <ShieldCheck size={14} color="#059669" />
+                <span>CERTIFIÉ SUR LA BLOCKCHAIN DIPLOCHAIN</span>
+              </div>
+              <div className="cert-hash-value">
+                <span className="hash-label-cert">Hash :</span>
+                <code className="hash-code-cert">
+                  {diploma.blockchainHash
+                    ? diploma.blockchainHash.substring(0, 42) + '...'
+                    : 'En cours d\'enregistrement...'}
+                </code>
+              </div>
+              <div className="cert-hash-footer">
+                <span> Document infalsifiable & DiploChain Burkina Faso</span>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
