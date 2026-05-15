@@ -11,7 +11,8 @@ import {
   GraduationCap,
   Briefcase,
   Settings as SettingsIcon,
-  Home
+  Home,
+  Search
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -55,25 +56,30 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
     <div className="actor-dashboard univ-theme">
       {/* Top Header */}
       <header className="univ-header">
-        <div className="univ-logo-section" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-          <Award size={28} />
-          <span>DiploChain</span>
+        <div className="univ-header-left" style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <div className="univ-header-badge">
+            {getHeaderTitle()}
+          </div>
+
+          <div className="univ-header-search">
+            <Search className="search-icon-nav" size={16} />
+            <input 
+              type="text" 
+              className="univ-search-input" 
+              placeholder="Rechercher un étudiant ou un diplôme..." 
+            />
+          </div>
         </div>
-        <div className="univ-header-center">
-          {getHeaderTitle()}
-        </div>
-        <div className="univ-user-profile" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <button
-            onClick={() => navigate('/')}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#f8fafc', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 500 }}
-          >
-            <Home size={18} />
-            <span>Accueil</span>
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingLeft: '24px', borderLeft: '1px solid rgba(255,255,255,0.2)' }}>
-            <UserCircle size={24} />
-            <span>{user?.firstName || user?.name || 'Mon Profil'}</span>
-            <ChevronRight size={16} />
+        
+        <div className="univ-header-right">
+          <div className="univ-user-profile" onClick={() => navigate('/')}>
+            <div className="univ-avatar">
+              {(user?.firstName || user?.name || 'U').charAt(0)}
+            </div>
+            <div className="univ-user-info">
+              <span className="univ-user-name">{user?.firstName ? `${user.firstName} ${user.lastName}` : (user?.name || 'Mon Profil')}</span>
+            </div>
+            <span className="univ-chevron">▾</span>
           </div>
         </div>
       </header>
@@ -81,13 +87,19 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
       <div className="univ-body">
         {/* Sidebar */}
         <aside className="univ-sidebar">
+          <div className="univ-sidebar-logo" onClick={() => navigate('/')}>
+            🔗 Diplo<span>Chain</span>
+          </div>
+
           <div className="univ-sidebar-top">
             <div className="univ-inst-icon">
               {getRoleIcon(user?.role)}
             </div>
             <div className="univ-inst-info">
               <div className="univ-inst-name">{user?.firstName ? `${user.firstName} ${user.lastName}` : user?.name}</div>
-              <span className="univ-key-status">{getRoleLabel(user?.role)}</span>
+              <span className="univ-key-status">
+                {getRoleLabel(user?.role)} {user?.role === 'institution' && <span className="lock-icon">🔒</span>}
+              </span>
             </div>
           </div>
 
@@ -100,12 +112,30 @@ const DashboardLayout = ({ children, tabs, activeTab, setActiveTab }) => {
               >
                 {tab.icon}
                 <span>{tab.label}</span>
+                {activeTab === tab.id && <ChevronRight size={14} style={{ marginLeft: 'auto', opacity: 0.5 }} />}
               </button>
             ))}
-            <button className="univ-nav-item univ-nav-item-logout" onClick={handleLogout}>
-              <LogOut size={18} />
-              <span>Se déconnecter</span>
-            </button>
+
+            <div className="sidebar-footer" style={{ marginTop: 'auto', paddingTop: 20 }}>
+              <div style={{ 
+                background: 'rgba(255,255,255,0.03)', 
+                borderRadius: '12px', 
+                padding: '12px',
+                marginBottom: '20px',
+                border: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                  <div className="pulse-dot"></div>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.5px' }}>RÉSEAU ACTIF</span>
+                </div>
+                <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Nœud Burkina Faso #04</div>
+              </div>
+
+              <button className="univ-nav-item univ-nav-item-logout" onClick={handleLogout}>
+                <LogOut size={18} />
+                <span>Déconnexion</span>
+              </button>
+            </div>
           </nav>
         </aside>
 

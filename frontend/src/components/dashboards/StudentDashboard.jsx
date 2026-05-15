@@ -75,83 +75,79 @@ const StudentDashboard = ({ user, data }) => {
 
   const renderOverview = () => (
     <>
-      <div className="univ-stats-grid">
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data.diplomas?.length || 0}</h3>
-            <span className="univ-stat-label">Certifications Total</span>
+      <div className="univ-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '32px' }}>
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-gold"><GraduationCap size={20} color="var(--univ-orange)" /></div>
+            <div className="pulse-dot"></div>
           </div>
-          <div className="univ-stat-icon-mini" style={{ background: '#e0f2fe' }}><Award size={24} color="#0ea5e9" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data.diplomas?.length || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Certifications Total</span>
+          </div>
         </div>
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data.diplomas?.filter(d => d.status === 'verified').length || 0}</h3>
-            <span className="univ-stat-label">Diplômes Vérifiés</span>
+
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-green"><Shield size={20} color="var(--univ-success)" /></div>
+            <div style={{ fontSize: '10px', color: 'var(--univ-success)', fontWeight: 800 }}>VÉRIFIÉ</div>
           </div>
-          <div className="univ-stat-icon-mini" style={{ background: '#dcfce7' }}><CheckCircle size={24} color="#22c55e" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data.diplomas?.filter(d => d.status === 'verified').length || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Diplômes Sécurisés</span>
+          </div>
         </div>
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data.diplomas?.filter(d => d.status !== 'verified').length || 0}</h3>
-            <span className="univ-stat-label">En attente / Brouillon</span>
+
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-blue"><Calendar size={20} color="#3b82f6" /></div>
+            <div style={{ fontSize: '10px', color: 'var(--univ-text-muted)', fontWeight: 800 }}>SESSION 2026</div>
           </div>
-          <div className="univ-stat-icon-mini" style={{ background: '#fef3c7' }}><Clock size={24} color="#f59e0b" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data.diplomas?.filter(d => d.status !== 'verified').length || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>En attente d'Ancrage</span>
+          </div>
         </div>
       </div>
 
       <div className="univ-panel">
         <div className="univ-panel-header">
           <h2>Diplômes Récents</h2>
-          <button 
-            className="btn-link" 
-            onClick={() => setActiveTab('diplomas')}
-            style={{ color: '#f59e0b', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-          >
-            Voir tout
-          </button>
+          <button className="univ-btn-text" onClick={() => setActiveTab('diplomas')}>Voir tout l'historique →</button>
         </div>
         <div className="univ-panel-body">
           {data.diplomas?.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
               {data.diplomas.slice(0, 3).map(d => (
-                <div key={d._id} className="univ-panel" style={{ border: '1px solid #e2e8f0', marginBottom: 0 }}>
-                  <div className="univ-panel-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                      <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '8px' }}>
-                        <FileText size={24} color="#1e293b" />
-                      </div>
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a' }}>{d.title}</h4>
-                        <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>{d.institution?.name || 'Institution inconnue'}</p>
-                      </div>
+                <div key={d._id} className="univ-stat-card-premium" style={{ cursor: 'pointer' }} onClick={() => setSelectedDiploma(d)}>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ background: 'var(--univ-bg)', padding: '12px', borderRadius: '12px', border: '1px solid var(--univ-border)' }}>
+                      <Award size={24} color="var(--univ-orange)" />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #e2e8f0' }}>
-                      <span style={{ 
-                        fontSize: '0.75rem', 
-                        padding: '4px 8px', 
-                        borderRadius: '12px',
-                        background: d.status === 'verified' ? '#dcfce7' : '#fef3c7',
-                        color: d.status === 'verified' ? '#166534' : '#92400e',
-                        fontWeight: 600
-                      }}>
-                        {d.status === 'verified' ? 'Vérifié' : 'En attente'}
-                      </span>
-                      <button 
-                        onClick={() => setSelectedDiploma(d)}
-                        className="btn-link" 
-                        style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#0ea5e9', background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.85rem' }}
-                      >
-                        <Eye size={16} /> Consulter
-                      </button>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--univ-navy)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.title}</h4>
+                      <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--univ-text-muted)', fontWeight: 500 }}>{d.institution?.name}</p>
                     </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                    <span style={{ fontSize: '10px', fontWeight: 700, color: d.status === 'verified' ? 'var(--univ-success)' : 'var(--univ-orange)' }}>
+                      {d.status === 'verified' ? '● SÉCURISÉ BLOCKCHAIN' : '○ EN COURS'}
+                    </span>
+                    <button className="univ-btn-text" style={{ fontSize: '11px' }}>Détails <ChevronRight size={12} /></button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-              <Shield size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
-              <p>Aucun diplôme enregistré pour le moment.</p>
+            <div style={{ textAlign: 'center', padding: '60px 0' }}>
+              <Shield size={48} style={{ opacity: 0.1, marginBottom: '16px' }} />
+              <p style={{ color: 'var(--univ-text-muted)' }}>Votre coffre-fort numérique est vide.</p>
             </div>
           )}
         </div>
