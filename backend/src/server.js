@@ -30,8 +30,23 @@ const app = express();
 
 // Middlewares de sécurité et de performance
 app.use(helmet());
+
+// Configuration CORS dynamique pour supporter plusieurs origines
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',') 
+  : ['http://localhost:3000', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Permettre les requêtes sans origine (comme les outils de test ou les serveurs locaux)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Non autorisé par CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(compression());
@@ -57,6 +72,10 @@ app.use('/api/auth/register', authLimiter);
 // Middleware pour parser le JSON
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Servir les fichiers uploadés (logos, documents)
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes API
 app.use('/api/auth', authRoutes);

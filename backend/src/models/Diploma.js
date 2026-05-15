@@ -47,10 +47,10 @@ const diplomaSchema = new mongoose.Schema({
   grade: {
     type: String,
     enum: {
-      values: ['distinction', 'merit', 'pass', 'fail'],
+      values: ['distinction', 'assez bien', 'bien', 'passable', 'excellent', 'très bien'],
       message: 'Note invalide'
     },
-    default: 'pass'
+    default: 'passable'
   },
   gpa: {
     type: Number,
@@ -141,12 +141,12 @@ diplomaSchema.index({ status: 1 });
 diplomaSchema.index({ createdAt: -1 });
 
 // Virtual pour l'URL de vérification
-diplomaSchema.virtual('shareableLink').get(function() {
+diplomaSchema.virtual('shareableLink').get(function () {
   return `${process.env.FRONTEND_URL}/verify/${this.blockchainHash}`;
 });
 
 // Middleware pre-save pour générer certificateNumber
-diplomaSchema.pre('save', async function(next) {
+diplomaSchema.pre('save', async function (next) {
   if (!this.certificateNumber) {
     const timestamp = Date.now();
     const randomStr = crypto.randomBytes(4).toString('hex').toUpperCase();
@@ -156,13 +156,13 @@ diplomaSchema.pre('save', async function(next) {
 });
 
 // Méthode pour générer un hash blockchain
-diplomaSchema.methods.generateBlockchainHash = function() {
+diplomaSchema.methods.generateBlockchainHash = function () {
   const data = `${this._id}${this.certificateNumber}${this.issueDate.getTime()}`;
   return '0x' + crypto.createHash('sha256').update(data).digest('hex');
 };
 
 // Méthode pour marquer comme émis sur la blockchain
-diplomaSchema.methods.markAsBlockchainIssued = function(txHash, address) {
+diplomaSchema.methods.markAsBlockchainIssued = function (txHash, address) {
   this.issuedOnBlockchain = true;
   this.blockchainTxHash = txHash;
   this.blockchainAddress = address;
@@ -172,7 +172,7 @@ diplomaSchema.methods.markAsBlockchainIssued = function(txHash, address) {
 };
 
 // Méthode pour révoquer un diplôme
-diplomaSchema.methods.revoke = function(reason) {
+diplomaSchema.methods.revoke = function (reason) {
   this.status = 'revoked';
   this.revokedAt = new Date();
   this.revocationReason = reason;
@@ -180,12 +180,12 @@ diplomaSchema.methods.revoke = function(reason) {
 };
 
 // Méthode statique pour trouver par hash blockchain
-diplomaSchema.statics.findByBlockchainHash = function(hash) {
+diplomaSchema.statics.findByBlockchainHash = function (hash) {
   return this.findOne({ blockchainHash: hash });
 };
 
 // Méthode statique pour trouver par certificateNumber
-diplomaSchema.statics.findByCertificateNumber = function(number) {
+diplomaSchema.statics.findByCertificateNumber = function (number) {
   return this.findOne({ certificateNumber: number });
 };
 

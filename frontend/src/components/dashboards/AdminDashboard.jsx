@@ -55,32 +55,33 @@ const AdminDashboard = ({ user, data, onToggleInstitution }) => {
           <h2>Dernières Institutions Inscrites</h2>
           <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.875rem' }}><UserPlus size={16} /> Ajouter</button>
         </div>
-        <div className="univ-panel-body">
-          <table className="univ-data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="univ-panel-body" style={{ padding: 0 }}>
+          <table className="univ-data-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-                <th style={{ padding: '12px' }}>Nom</th>
-                <th style={{ padding: '12px' }}>Email</th>
-                <th style={{ padding: '12px' }}>Statut</th>
-                <th style={{ padding: '12px' }}>Action</th>
+              <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Statut</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {data.institutions?.map(inst => (
-                <tr key={inst._id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <td style={{ padding: '12px' }}><strong>{inst.name}</strong></td>
-                  <td style={{ padding: '12px' }}>{inst.email}</td>
-                  <td style={{ padding: '12px' }}>
+                <tr key={inst._id}>
+                  <td><strong>{inst.name}</strong></td>
+                  <td>{inst.email}</td>
+                  <td>
                     {inst.isVerified ? (
-                      <span style={{ color: '#22c55e', display: 'flex', alignItems: 'center', gap: '4px' }}><CheckCircle size={14} /> Vérifié</span>
+                      <span className="univ-status-badge registered"><CheckCircle size={14} /> Vérifié</span>
                     ) : (
-                      <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}><XCircle size={14} /> Non vérifié</span>
+                      <span className="univ-status-badge" style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)' }}><XCircle size={14} /> Non vérifié</span>
                     )}
                   </td>
-                  <td style={{ padding: '12px' }}>
+                  <td>
                     <button 
                       onClick={() => onToggleInstitution(inst._id, inst.isVerified)}
-                      style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', background: 'white', cursor: 'pointer', fontSize: '0.75rem' }}
+                      className="univ-btn-outline"
+                      style={{ padding: '6px 12px', fontSize: '0.75rem' }}
                     >
                       {inst.isVerified ? 'Révoquer' : 'Approuver'}
                     </button>

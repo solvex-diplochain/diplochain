@@ -53,29 +53,28 @@ const EmployerDashboard = ({ user, data }) => {
         <div className="univ-panel-header">
           <h2>Recherches Récentes</h2>
         </div>
-        <div className="univ-panel-body">
-          <table className="univ-data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <div className="univ-panel-body" style={{ padding: 0 }}>
+          <table className="univ-data-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-                <th style={{ padding: '12px' }}>Candidat</th>
-                <th style={{ padding: '12px' }}>Diplôme</th>
-                <th style={{ padding: '12px' }}>Statut</th>
-                <th style={{ padding: '12px' }}>Action</th>
+              <tr>
+                <th>Candidat</th>
+                <th>Diplôme</th>
+                <th>Statut</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {/* Mock data for now */}
-              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '12px' }}><strong>Jean Dupont</strong></td>
-                <td style={{ padding: '12px' }}>Master Informatique</td>
-                <td style={{ padding: '12px' }}><span style={{ color: '#22c55e', fontWeight: 600 }}>Authentique</span></td>
-                <td style={{ padding: '12px' }}><button style={{ background: 'none', border: 'none', color: '#1e293b', cursor: 'pointer' }}><ExternalLink size={16} /></button></td>
+              <tr>
+                <td><strong>Jean Dupont</strong></td>
+                <td>Master Informatique</td>
+                <td><span className="univ-status-badge registered"><CheckCircle size={14} /> Authentique</span></td>
+                <td><button className="univ-nav-item" style={{ padding: '4px', width: 'auto' }}><ExternalLink size={16} /></button></td>
               </tr>
-              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '12px' }}><strong>Marie Curie</strong></td>
-                <td style={{ padding: '12px' }}>Licence Physique</td>
-                <td style={{ padding: '12px' }}><span style={{ color: '#22c55e', fontWeight: 600 }}>Authentique</span></td>
-                <td style={{ padding: '12px' }}><button style={{ background: 'none', border: 'none', color: '#1e293b', cursor: 'pointer' }}><ExternalLink size={16} /></button></td>
+              <tr>
+                <td><strong>Marie Curie</strong></td>
+                <td>Licence Physique</td>
+                <td><span className="univ-status-badge registered"><CheckCircle size={14} /> Authentique</span></td>
+                <td><button className="univ-nav-item" style={{ padding: '4px', width: 'auto' }}><ExternalLink size={16} /></button></td>
               </tr>
             </tbody>
           </table>

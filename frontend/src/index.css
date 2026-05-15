@@ -1,146 +1,92 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* New Professional Theme - Navy, White, Orange */
-  --primary: #1e293b;
-  --primary-light: #334155;
-  --secondary: #f59e0b;
+  --primary: #0f172a;
+  --primary-light: #1e293b;
   --accent: #f59e0b;
-  
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
+  --accent-hover: #d97706;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --bg: #f8fafc;
+  --white: #ffffff;
   --text-main: #1e293b;
   --text-muted: #64748b;
-  
-  --border-light: #e2e8f0;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  
-  --success: #22c55e;
-  --error: #ef4444;
-  --warning: #f59e0b;
-  
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light;
-  color: var(--text-main);
-  background-color: var(--bg-main);
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --border: #e2e8f0;
+  --sidebar-width: 260px;
+  --radius-sm: 8px;
+  --radius: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --glass: rgba(255, 255, 255, 0.8);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  min-height: 100vh;
-  background-color: var(--bg-main);
-  overflow-x: hidden;
+  font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-main {
-  padding-top: 80px; /* Offset for fixed navbar */
-}
-
-.no-global-layout main {
-  padding-top: 0;
-}
-
-h1, h2, h3, h4 {
-  font-family: 'Outfit', sans-serif;
-  color: var(--primary);
-}
-
-/* Updated Utility Classes */
-.glass {
-  background: white;
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  box-shadow: var(--shadow-sm);
-}
-
+/* Common Components */
 .glass-card {
-  background: white;
-  border: 1px solid var(--border-light);
-  border-radius: 24px;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-  box-shadow: var(--shadow-sm);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
 }
 
-/* Buttons */
 .btn-primary {
-  background-color: var(--secondary);
+  background: var(--accent);
   color: white;
-  padding: 12px 28px;
+  padding: 12px 24px;
   border-radius: 12px;
   border: none;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .btn-primary:hover {
-  background-color: #d97706;
-  transform: scale(1.02);
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .btn-secondary {
-  background-color: white;
+  background: white;
   color: var(--primary);
-  padding: 12px 28px;
+  padding: 12px 24px;
   border-radius: 12px;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s;
 }
 
 .btn-secondary:hover {
-  background-color: #f1f5f9;
+  background: var(--bg);
+  border-color: var(--primary);
 }
 
-.btn-back-global {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-weight: 600;
-  cursor: pointer;
-  padding: 10px 0;
-  transition: all 0.2s;
-  margin-bottom: 20px;
-}
-
-.btn-back-global:hover {
-  color: var(--secondary);
-  transform: translateX(-5px);
-}
-
-/* Layout */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-section {
-  padding: 80px 0;
+h1, h2, h3, h4 {
+  font-weight: 700;
+  color: var(--primary);
 }

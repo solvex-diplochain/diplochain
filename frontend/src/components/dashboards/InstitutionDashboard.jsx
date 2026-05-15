@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Building, 
-  PlusCircle, 
-  Search, 
-  BarChart3, 
-  Upload, 
+import {
+  Building,
+  PlusCircle,
+  Search,
+  BarChart3,
+  Upload,
   Settings,
   LayoutDashboard,
   Users,
@@ -33,25 +33,34 @@ import {
   Pause,
   Save,
   Key,
-  ShieldCheck as ShieldIcon,
   Activity,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  X,
+  User,
+  GraduationCap,
+  Briefcase,
+  Settings as SettingsIcon,
+  Home,
+  Plus
 } from 'lucide-react';
-import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, BarChart, Bar, Legend 
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, BarChart, Bar, Legend
 } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from './DashboardLayout';
 import AddStudent from './AddStudent';
 import StudentList from './StudentList';
+import CertificateTemplate from '../CertificateTemplate';
 import API from '../../services/api';
 
 const InstitutionDashboard = ({ user, data }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [settingsTab, setSettingsTab] = useState('profile');
   const [timeFilter, setTimeFilter] = useState('30days');
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedDiploma, setSelectedDiploma] = useState(null);
   const [profile, setProfile] = useState({
     name: user?.name || 'Université de Ouagadougou',
     sigle: 'UO',
@@ -61,9 +70,13 @@ const InstitutionDashboard = ({ user, data }) => {
     adresse: "Avenue de l'Université, Secteur 4",
     website: 'https://www.uo.bf',
     email: 'contact@uo.bf',
-    phone: '+226 25 30 XX XX'
+    phone: '+226 25 30 XX XX',
+    logo: null
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoUploadSuccess, setLogoUploadSuccess] = useState('');
   const [loadingProfile, setLoadingProfile] = useState(true);
   const navigate = useNavigate();
 
@@ -82,7 +95,8 @@ const InstitutionDashboard = ({ user, data }) => {
             adresse: inst.address?.street || '',
             website: inst.website || '',
             email: inst.email || '',
-            phone: inst.phone || ''
+            phone: inst.phone || '',
+            logo: inst.logo || null
           });
         }
       } catch (error) {
@@ -109,7 +123,6 @@ const InstitutionDashboard = ({ user, data }) => {
         },
         website: profile.website,
         phone: profile.phone
-        // Email is usually not updatable via this form for security
       };
 
       const response = await API.put('/institutions/my-profile', updateData);
@@ -121,6 +134,44 @@ const InstitutionDashboard = ({ user, data }) => {
       alert(error.response?.data?.message || 'Erreur lors de la mise à jour du profil');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Reset file input so we can select the same file again if needed
+    e.target.value = '';
+
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!allowed.includes(file.type)) {
+      alert('Format non supporté. Utilisez PNG, JPG, GIF, WEBP ou SVG.');
+      return;
+    }
+    // Preview immediately
+    const reader = new FileReader();
+    reader.onload = (ev) => setLogoPreview(ev.target.result);
+    reader.readAsDataURL(file);
+
+    // Upload to backend
+    setIsUploadingLogo(true);
+    setLogoUploadSuccess('');
+    try {
+      const formData = new FormData();
+      formData.append('logo', file);
+      const res = await API.post('/institutions/my-profile/upload-logo', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      if (res.data.success) {
+        setProfile(prev => ({ ...prev, logo: res.data.data.logoUrl }));
+        setLogoUploadSuccess('Logo mis à jour avec succès !');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Erreur lors de l\'upload du logo');
+      setLogoPreview(null);
+    } finally {
+      setIsUploadingLogo(false);
     }
   };
 
@@ -160,38 +211,55 @@ const InstitutionDashboard = ({ user, data }) => {
 
   const renderOverview = () => (
     <>
-      <div className="univ-stats-grid">
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data?.diplomas?.length || 0}</h3>
-            <span className="univ-stat-label">Total Diplômes Émis</span>
-            <span className="univ-stat-trend positive">+12% ce mois</span>
+      <div className="univ-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', marginBottom: '32px' }}>
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-gold"><FileText size={20} color="var(--univ-orange)" /></div>
+            <span className="univ-stat-trend positive" style={{ fontSize: '11px', fontWeight: 700 }}>+12%</span>
           </div>
-          <div className="univ-stat-icon-mini"><TrendingUp size={24} color="#22c55e" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data?.diplomas?.length || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Total Diplômes Émis</span>
+          </div>
         </div>
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data.stats?.totalStudents || 0}</h3>
-            <span className="univ-stat-label">Étudiants Actifs</span>
-            <span className="univ-stat-trend positive">+5%</span>
+
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-blue"><Users size={20} color="#3b82f6" /></div>
+            <span className="univ-stat-trend positive" style={{ fontSize: '11px', fontWeight: 700 }}>+5%</span>
           </div>
-          <div className="univ-stat-icon-mini"><Users size={24} color="#1e293b" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data.stats?.totalStudents || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Étudiants Actifs</span>
+          </div>
         </div>
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">{data.stats?.totalVerified || 0}</h3>
-            <span className="univ-stat-label">Preuves On-Chain</span>
-            <span className="univ-stat-trend">Système Sécurisé</span>
+
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-green"><ShieldCheck size={20} color="var(--univ-success)" /></div>
+            <div className="pulse-dot"></div>
           </div>
-          <div className="univ-stat-icon-mini"><ShieldCheck size={24} color="#1e293b" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>
+              {data.stats?.totalVerified || 0}
+            </h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Preuves On-Chain</span>
+          </div>
         </div>
-        <div className="univ-stat-card">
-          <div className="univ-stat-info">
-            <h3 className="univ-stat-value">99.9%</h3>
-            <span className="univ-stat-label">Uptime Blockchain</span>
-            <span className="univ-stat-trend positive">Opérationnel</span>
+
+        <div className="univ-stat-card-premium">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div className="kpi-icon-glow glow-blue"><Activity size={20} color="#3b82f6" /></div>
+            <div style={{ fontSize: '10px', color: 'var(--univ-success)', fontWeight: 800 }}>LIVE</div>
           </div>
-          <div className="univ-stat-icon-mini"><Globe size={24} color="#1e293b" /></div>
+          <div>
+            <h3 className="univ-stat-value" style={{ fontSize: '28px', fontWeight: 800, margin: '8px 0 4px' }}>99.9%</h3>
+            <span className="univ-stat-label" style={{ fontSize: '12px', color: 'var(--univ-text-muted)', fontWeight: 600 }}>Uptime Blockchain</span>
+          </div>
         </div>
       </div>
 
@@ -202,21 +270,21 @@ const InstitutionDashboard = ({ user, data }) => {
             <button className="univ-btn-outline" style={{ padding: '4px 8px' }}><Download size={16} /></button>
           </div>
           <div className="univ-panel-body" style={{ padding: 0 }}>
-             <table className="univ-data-table">
-               <thead>
-                 <tr><th>Titulaire</th><th>Titre / Diplôme</th><th>Date d'émission</th><th>Statut</th></tr>
-               </thead>
-               <tbody>
-                 {data?.diplomas?.slice(0, 5).map(d => (
-                   <tr key={d._id}>
-                     <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
-                     <td>{d.title}</td>
-                     <td>{new Date(d.issueDate).toLocaleDateString()}</td>
-                     <td><span className="univ-status-badge registered"><CheckCircle size={12} /> {d.status}</span></td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
+            <table className="univ-data-table">
+              <thead>
+                <tr><th>Titulaire</th><th>Titre / Diplôme</th><th>Date d'émission</th><th>Statut</th></tr>
+              </thead>
+              <tbody>
+                {data?.diplomas?.slice(0, 5).map(d => (
+                  <tr key={d._id}>
+                    <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
+                    <td>{d.title}</td>
+                    <td>{new Date(d.issueDate).toLocaleDateString()}</td>
+                    <td><span className="univ-status-badge registered"><CheckCircle size={12} /> {d.status}</span><button className="univ-btn-outline" style={{ padding: '2px 6px', fontSize: '0.7rem', marginLeft: '8px' }} onClick={() => { setSelectedDiploma(d); setShowPreview(true); }}><Award size={12} /> Voir</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -273,41 +341,52 @@ const InstitutionDashboard = ({ user, data }) => {
 
         {activeTab === 'search' && (
           <motion.div key="search" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-             <div className="univ-panel">
-                <div className="univ-panel-header">
-                  <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
-                    <div style={{ flex: 1, position: 'relative' }}>
-                      <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#64748b' }} />
-                      <input type="text" placeholder="Rechercher par nom, matricule ou hash..." style={{ width: '100%', padding: '10px 10px 10px 40px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} />
-                    </div>
-                    <button className="univ-btn-outline"><Filter size={18} /> Filtres</button>
+            <div className="univ-panel">
+              <div className="univ-panel-header">
+                <div style={{ display: 'flex', gap: '16px', flex: 1 }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#64748b' }} />
+                    <input type="text" placeholder="Rechercher par nom, matricule ou hash..." style={{ width: '100%', padding: '10px 10px 10px 40px', border: '1px solid #e2e8f0', borderRadius: '8px', outline: 'none' }} />
                   </div>
+                  <button className="univ-btn-outline"><Filter size={18} /> Filtres</button>
                 </div>
-                <div className="univ-panel-body" style={{ padding: 0 }}>
-                  <table className="univ-data-table">
-                    <thead>
-                      <tr><th>Matricule</th><th>Étudiant</th><th>Filière</th><th>Date d'Emission</th><th>Action</th></tr>
-                    </thead>
-                    <tbody>
-                      {data?.diplomas?.map(d => (
-                        <tr key={d._id}>
-                          <td><code>{d.student?.studentProfile?.studentId || 'N/A'}</code></td>
-                          <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
-                          <td>{d.title}</td>
-                          <td>{new Date(d.issueDate).toLocaleDateString()}</td>
-                          <td><button className="univ-btn-outline" style={{ padding: '4px' }}><ExternalLink size={16} /></button></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-             </div>
+              </div>
+              <div className="univ-panel-body" style={{ padding: 0 }}>
+                <table className="univ-data-table">
+                  <thead>
+                    <tr><th>Matricule</th><th>Étudiant</th><th>Filière</th><th>Date d'Emission</th><th>Action</th></tr>
+                  </thead>
+                  <tbody>
+                    {data?.diplomas?.map(d => (
+                      <tr key={d._id}>
+                        <td><code>{d.student?.studentProfile?.studentId || 'N/A'}</code></td>
+                        <td><strong>{d.student?.firstName} {d.student?.lastName}</strong></td>
+                        <td>{d.title}</td>
+                        <td>{new Date(d.issueDate).toLocaleDateString()}</td>
+                        <td>
+                          <button
+                            className="univ-btn-outline"
+                            style={{ padding: '4px' }}
+                            onClick={() => {
+                              setSelectedDiploma(d);
+                              setShowPreview(true);
+                            }}
+                          >
+                            <ExternalLink size={16} />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </motion.div>
         )}
 
         {activeTab === 'list' && (
           <motion.div key="list" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-             <StudentList students={data?.students} />
+            <StudentList students={data?.students} />
           </motion.div>
         )}
 
@@ -391,7 +470,7 @@ const InstitutionDashboard = ({ user, data }) => {
                         ))}
                       </Pie>
                       <Tooltip />
-                      <Legend verticalAlign="bottom" height={36}/>
+                      <Legend verticalAlign="bottom" height={36} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -408,7 +487,7 @@ const InstitutionDashboard = ({ user, data }) => {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis dataKey="name" axisLine={false} tickLine={false} />
                       <YAxis axisLine={false} tickLine={false} />
-                      <Tooltip cursor={{fill: 'rgba(30, 41, 59, 0.05)'}} />
+                      <Tooltip cursor={{ fill: 'rgba(30, 41, 59, 0.05)' }} />
                       <Bar dataKey="value" fill="#334155" radius={[4, 4, 0, 0]} barSize={40} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -476,176 +555,461 @@ const InstitutionDashboard = ({ user, data }) => {
               </div>
 
               <div className="settings-grid">
-                {/* Main Profile Form */}
+                {/* Main Content Area */}
                 <div className="settings-main">
-                  <div className="univ-panel">
-                    <div className="univ-panel-header">
-                      <h3>Informations de l'établissement</h3>
-                    </div>
-                    <div className="univ-panel-body">
-                      <div className="profile-edit-layout">
-                        <div className="logo-upload-section">
-                          <div className="logo-preview-wrapper">
-                            <div className="logo-placeholder">
-                              <img src="https://via.placeholder.com/120?text=LOGO" alt="Logo" />
-                              <button className="logo-edit-btn"><Pencil size={14} /></button>
-                            </div>
-                            <button className="univ-btn-text">Changer le logo</button>
-                          </div>
-                        </div>
-
-                        <div className="profile-form-grid">
-                          <div className="input-row">
-                            <div className="input-group-pro">
-                              <label>Nom officiel</label>
-                              <input 
-                                type="text" 
-                                value={profile.name} 
-                                onChange={(e) => setProfile({...profile, name: e.target.value})} 
-                              />
-                            </div>
-                            <div className="input-group-pro">
-                              <label>Sigle</label>
-                              <input 
-                                type="text" 
-                                value={profile.sigle} 
-                                onChange={(e) => setProfile({...profile, sigle: e.target.value})} 
-                              />
-                            </div>
-                          </div>
-
-                          <div className="input-row">
-                            <div className="input-group-pro">
-                              <label>Type</label>
-                              <select 
-                                value={profile.type} 
-                                onChange={(e) => setProfile({...profile, type: e.target.value})}
+                  {settingsTab === 'profile' && (
+                    <div className="univ-panel">
+                      <div className="univ-panel-header">
+                        <h3>Informations de l'établissement</h3>
+                      </div>
+                      <div className="univ-panel-body">
+                        <div className="profile-edit-layout">
+                          <div className="logo-upload-section">
+                            <div className="logo-preview-wrapper">
+                              <div className="logo-placeholder">
+                                {(logoPreview || profile.logo) ? (
+                                  <img
+                                    src={logoPreview || profile.logo}
+                                    alt="Logo Institution"
+                                    style={{ width: '120px', height: '120px', objectFit: 'contain', borderRadius: '8px' }}
+                                  />
+                                ) : (
+                                  <div style={{ width: '120px', height: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', borderRadius: '8px', border: '2px dashed #cbd5e1', cursor: 'pointer' }}>
+                                    <Upload size={28} color="#94a3b8" />
+                                    <span style={{ fontSize: '0.65rem', color: '#94a3b8', marginTop: '6px', textAlign: 'center' }}>Aucun logo</span>
+                                  </div>
+                                )}
+                                <label className="logo-edit-btn" htmlFor="logo-file-input" style={{ cursor: 'pointer' }}>
+                                  {isUploadingLogo ? '...' : <Pencil size={14} />}
+                                </label>
+                                <input
+                                  id="logo-file-input"
+                                  type="file"
+                                  accept="image/*"
+                                  style={{ display: 'none' }}
+                                  onChange={handleLogoUpload}
+                                />
+                              </div>
+                              <label
+                                htmlFor="logo-file-input"
+                                className="univ-btn-text"
+                                style={{ cursor: 'pointer', display: 'block', textAlign: 'center', marginTop: '8px' }}
                               >
-                                <option value="public">Université publique</option>
-                                <option value="private">Université privée</option>
-                                <option value="institute">Institut de recherche</option>
-                              </select>
-                            </div>
-                            <div className="input-group-pro">
-                              <label>Région</label>
-                              <input 
-                                type="text" 
-                                value={profile.region} 
-                                onChange={(e) => setProfile({...profile, region: e.target.value})} 
-                              />
-                            </div>
-                            <div className="input-group-pro">
-                              <label>Ville</label>
-                              <input 
-                                type="text" 
-                                value={profile.ville} 
-                                onChange={(e) => setProfile({...profile, ville: e.target.value})} 
-                              />
+                                {isUploadingLogo ? 'Envoi en cours...' : 'Changer le logo'}
+                              </label>
+                              {logoUploadSuccess && (
+                                <div style={{ fontSize: '0.75rem', color: '#059669', marginTop: '4px', textAlign: 'center', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'center' }}>
+                                  <CheckCircle size={12} /> {logoUploadSuccess}
+                                </div>
+                              )}
+                              <p style={{ fontSize: '0.65rem', color: '#94a3b8', textAlign: 'center', margin: '4px 0 0', lineHeight: 1.4 }}>PNG, JPG ou SVG<br />Max 5 Mo</p>
                             </div>
                           </div>
 
-                          <div className="input-group-pro">
-                            <label>Adresse</label>
-                            <input 
-                              type="text" 
-                              value={profile.adresse} 
-                              onChange={(e) => setProfile({...profile, adresse: e.target.value})} 
-                            />
-                          </div>
+                          <div className="profile-form-grid">
+                            <div className="input-row">
+                              <div className="input-group-pro">
+                                <label>Nom officiel</label>
+                                <input
+                                  type="text"
+                                  value={profile.name}
+                                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                                />
+                              </div>
+                              <div className="input-group-pro">
+                                <label>Sigle</label>
+                                <input
+                                  type="text"
+                                  value={profile.sigle}
+                                  onChange={(e) => setProfile({ ...profile, sigle: e.target.value })}
+                                />
+                              </div>
+                            </div>
 
-                          <div className="input-group-pro">
-                            <label>Site web</label>
-                            <input 
-                              type="text" 
-                              value={profile.website} 
-                              onChange={(e) => setProfile({...profile, website: e.target.value})} 
-                            />
-                          </div>
+                            <div className="input-row">
+                              <div className="input-group-pro">
+                                <label>Type</label>
+                                <select
+                                  value={profile.type}
+                                  onChange={(e) => setProfile({ ...profile, type: e.target.value })}
+                                >
+                                  <option value="public">Université publique</option>
+                                  <option value="private">Université privée</option>
+                                  <option value="institute">Institut de recherche</option>
+                                </select>
+                              </div>
+                              <div className="input-group-pro">
+                                <label>Région</label>
+                                <input
+                                  type="text"
+                                  value={profile.region}
+                                  onChange={(e) => setProfile({ ...profile, region: e.target.value })}
+                                />
+                              </div>
+                              <div className="input-group-pro">
+                                <label>Ville</label>
+                                <input
+                                  type="text"
+                                  value={profile.ville}
+                                  onChange={(e) => setProfile({ ...profile, ville: e.target.value })}
+                                />
+                              </div>
+                            </div>
 
-                          <div className="input-row">
                             <div className="input-group-pro">
-                              <label>Email institutionnel</label>
-                              <input 
-                                type="email" 
-                                value={profile.email} 
-                                onChange={(e) => setProfile({...profile, email: e.target.value})} 
+                              <label>Adresse</label>
+                              <input
+                                type="text"
+                                value={profile.adresse}
+                                onChange={(e) => setProfile({ ...profile, adresse: e.target.value })}
                               />
                             </div>
+
                             <div className="input-group-pro">
-                              <label>Téléphone</label>
-                              <input 
-                                type="text" 
-                                value={profile.phone} 
-                                onChange={(e) => setProfile({...profile, phone: e.target.value})} 
+                              <label>Site web</label>
+                              <input
+                                type="text"
+                                value={profile.website}
+                                onChange={(e) => setProfile({ ...profile, website: e.target.value })}
                               />
                             </div>
-                          </div>
 
-                          <button 
-                            className="univ-btn-primary btn-save" 
-                            disabled={isSaving}
-                            onClick={handleUpdateProfile}
-                          >
-                            <Save size={18} /> {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
-                          </button>
+                            <div className="input-row">
+                              <div className="input-group-pro">
+                                <label>Email institutionnel</label>
+                                <input
+                                  type="email"
+                                  value={profile.email}
+                                  onChange={(e) => setProfile({ ...profile, email: e.target.value })}
+                                />
+                              </div>
+                              <div className="input-group-pro">
+                                <label>Téléphone</label>
+                                <input
+                                  type="text"
+                                  value={profile.phone}
+                                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                />
+                              </div>
+                            </div>
+
+                            <button
+                              className="univ-btn-primary btn-save"
+                              disabled={isSaving}
+                              onClick={handleUpdateProfile}
+                            >
+                              <Save size={18} /> {isSaving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
+                  )}
+
+
+                      {settingsTab === 'security' && (
+                        <div className="security-settings-section">
+                          <div className="univ-panel">
+                            <div className="univ-panel-header"><h3>Sécurité Blockchain</h3></div>
+                            <div className="univ-panel-body">
+                              <div className="wallet-card-premium">
+                                <div className="wallet-header">
+                                  <div className="wallet-status">
+                                    <ShieldCheck size={20} color="#10b981" />
+                                    <span style={{ marginLeft: '8px', fontWeight: 600, color: '#10b981' }}>Clé institutionnelle active</span>
+                                  </div>
+                                  <div className="wallet-type" style={{ fontSize: '11px', color: 'var(--univ-text-muted)' }}>HSM (Hardware Secure Module)</div>
+                                </div>
+                                <div className="wallet-address-box" style={{ marginTop: '20px', padding: '16px', background: 'var(--univ-bg)', borderRadius: '12px', border: '1px solid var(--univ-border)' }}>
+                                  <label style={{ display: 'block', fontSize: '12px', color: 'var(--univ-text-muted)', marginBottom: '8px' }}>Adresse du Smart Contract</label>
+                                  <div className="address-display" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <code style={{ fontSize: '13px', color: 'var(--univ-navy)', wordBreak: 'break-all' }}>0x742d35Cc6634C0532925a3b844Bc454e4438f44e</code>
+                                    <button className="copy-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--univ-orange)' }}><FileText size={14} /></button>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="security-options-grid" style={{ marginTop: '32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                <div className="security-opt-card" style={{ padding: '20px', border: '1px solid var(--univ-border)', borderRadius: '16px' }}>
+                                  <h4 style={{ margin: '0 0 8px 0' }}>Double Authentification</h4>
+                                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--univ-text-muted)' }}>Ajoutez une couche de sécurité lors de l'émission de diplômes.</p>
+                                  <button className="univ-btn-outline" style={{ width: '100%', marginTop: '16px', padding: '10px' }}>Configurer la 2FA</button>
+                                </div>
+                                <div className="security-opt-card" style={{ padding: '20px', border: '1px solid var(--univ-border)', borderRadius: '16px' }}>
+                                  <h4 style={{ margin: '0 0 8px 0' }}>Journal d'Audit</h4>
+                                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--univ-text-muted)' }}>Consultez l'historique complet des actions administratives.</p>
+                                  <button className="univ-btn-outline" style={{ width: '100%', marginTop: '16px', padding: '10px' }}>Voir les logs</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsTab === 'notifications' && (
+                        <div className="notifications-settings-section">
+                          <div className="univ-panel">
+                            <div className="univ-panel-header"><h3>Préférences de Notification</h3></div>
+                            <div className="univ-panel-body">
+                              <div className="notification-list">
+                                {[
+                                  { id: 'emit', title: 'Émission de diplômes', desc: 'Recevoir un rapport après chaque vague d\'émission.' },
+                                  { id: 'verify', title: 'Vérifications externes', desc: 'Être alerté lorsqu\'un recruteur vérifie un diplôme.' },
+                                  { id: 'fraud', title: 'Alerte de fraude', desc: 'Alerte immédiate en cas de tentative de vérification d\'un faux diplôme.', urgent: true },
+                                  { id: 'system', title: 'Mises à jour système', desc: 'Maintenance et nouvelles fonctionnalités.' }
+                                ].map(item => (
+                                  <div key={item.id} className="notif-setting-item" style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 0', borderBottom: '1px solid var(--univ-border)' }}>
+                                    <div>
+                                      <div style={{ fontWeight: 600, color: item.urgent ? '#ef4444' : 'var(--univ-navy)' }}>{item.title}</div>
+                                      <p style={{ fontSize: '0.85rem', color: 'var(--univ-text-muted)', margin: '4px 0 0' }}>{item.desc}</p>
+                                    </div>
+                                    <div className="toggle-switch">
+                                      <input type="checkbox" defaultChecked={true} id={`notif-${item.id}`} />
+                                      <label htmlFor={`notif-${item.id}`}></label>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {settingsTab === 'agents' && (
+                        <div className="agents-settings-section">
+                          <div className="univ-panel">
+                            <div className="univ-panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <h3>Gestion des Agents</h3>
+                              <button className="univ-btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>
+                                <Plus size={16} /> Ajouter un agent
+                              </button>
+                            </div>
+                            <div className="univ-panel-body" style={{ padding: 0 }}>
+                              <table className="univ-table">
+                                <thead>
+                                  <tr>
+                                    <th>NOM</th>
+                                    <th>RÔLE</th>
+                                    <th>DERNIÈRE ACTIVITÉ</th>
+                                    <th>ACTIONS</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--univ-navy)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>JD</div>
+                                        <div>
+                                          <div style={{ fontWeight: 600 }}>Jean Dupont</div>
+                                          <div style={{ fontSize: '0.75rem', color: 'var(--univ-text-muted)' }}>j.dupont@univ.bf</div>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td><span className="univ-status-badge">Super Admin</span></td>
+                                    <td>Il y a 10 min</td>
+                                    <td><button className="btn-icon-grey"><SettingsIcon size={14} /></button></td>
+                                  </tr>
+                                  <tr>
+                                    <td>
+                                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--univ-orange)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}>SM</div>
+                                        <div>
+                                          <div style={{ fontWeight: 600 }}>Sarah Maïga</div>
+                                          <div style={{ fontSize: '0.75rem', color: 'var(--univ-text-muted)' }}>s.maiga@univ.bf</div>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td><span className="univ-status-badge registered">Agent Émetteur</span></td>
+                                    <td>Hier</td>
+                                    <td><button className="btn-icon-grey"><SettingsIcon size={14} /></button></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                 {/* Right Sidebars */}
-                <div className="settings-sidebar">
-                  <div className="univ-panel sidebar-panel">
-                    <div className="univ-panel-header"><h3>Informations système</h3></div>
-                    <div className="univ-panel-body">
-                      <div className="sys-info-list">
-                        <div className="sys-info-item"><Key size={16} /> <span>Identifiant DiploChain : UO-BF-001</span></div>
-                        <div className="sys-info-item"><Calendar size={16} /> <span>Date d'inscription : 15/01/2024</span></div>
-                        <div className="sys-info-item success"><CheckCircle size={16} /> <span>Statut : Actif</span></div>
-                        <div className="sys-info-item"><Building size={16} /> <span>Accrédité par : Ministère de l'Enseignement Supérieur</span></div>
-                        <div className="sys-info-item"><FileText size={16} /> <span>Numéro d'agrément : AGR-2024-BF-0001</span></div>
+                  <div className="settings-sidebar">
+                    <div className="univ-panel sidebar-panel">
+                      <div className="univ-panel-header"><h3>Informations système</h3></div>
+                      <div className="univ-panel-body">
+                        <div className="sys-info-list">
+                          <div className="sys-info-item"><Key size={16} /> <span>Identifiant DiploChain : UO-BF-001</span></div>
+                          <div className="sys-info-item"><Calendar size={16} /> <span>Date d'inscription : 15/01/2024</span></div>
+                          <div className="sys-info-item success"><CheckCircle size={16} /> <span>Statut : Actif</span></div>
+                          <div className="sys-info-item"><Building size={16} /> <span>Accrédité par : Ministère de l'Enseignement Supérieur</span></div>
+                          <div className="sys-info-item"><FileText size={16} /> <span>Numéro d'agrément : AGR-2024-BF-0001</span></div>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="univ-panel sidebar-panel">
-                    <div className="univ-panel-header"><h3>Statut blockchain</h3> <span className="status-badge-green"><ShieldCheck size={12} /> Clé privée active et sécurisée</span></div>
-                    <div className="univ-panel-body">
-                      <div className="sys-info-list">
-                        <div className="sys-info-item"><Globe size={16} /> <span>Réseau : DiploChain Burkina Faso</span></div>
-                        <div className="sys-info-item"><History size={16} /> <span>Dernière transaction : Il y a 2 heures</span></div>
-                        <div className="sys-info-item"><BarChart3 size={16} /> <span>Total transactions : 1 248</span></div>
+                    <div className="univ-panel sidebar-panel">
+                      <div className="univ-panel-header"><h3>Statut blockchain</h3> <span className="status-badge-green"><ShieldCheck size={12} /> Clé privée active et sécurisée</span></div>
+                      <div className="univ-panel-body">
+                        <div className="sys-info-list">
+                          <div className="sys-info-item"><Globe size={16} /> <span>Réseau : DiploChain Burkina Faso</span></div>
+                          <div className="sys-info-item"><History size={16} /> <span>Dernière transaction : Il y a 2 heures</span></div>
+                          <div className="sys-info-item"><BarChart3 size={16} /> <span>Total transactions : 1 248</span></div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Danger Zone */}
-              <div className="danger-zone-box">
-                <h4>Zone de danger</h4>
-                <div className="danger-actions">
-                  <div className="danger-item">
-                    <div className="danger-text">
-                      <div className="danger-title"><AlertTriangle size={16} /> Suspendre temporairement le compte</div>
-                      <p>Aucun diplôme ne pourra être émis pendant la suspension</p>
+                {/* Danger Zone */}
+                <div className="danger-zone-box">
+                  <h4>Zone de danger</h4>
+                  <div className="danger-actions">
+                    <div className="danger-item">
+                      <div className="danger-text">
+                        <div className="danger-title"><AlertTriangle size={16} /> Suspendre temporairement le compte</div>
+                        <p>Aucun diplôme ne pourra être émis pendant la suspension</p>
+                      </div>
+                      <button className="btn-outline-danger">Suspendre</button>
                     </div>
-                    <button className="btn-outline-danger">Suspendre</button>
-                  </div>
-                  <div className="danger-item">
-                    <div className="danger-text">
-                      <div className="danger-title"><Download size={16} /> Exporter toutes les données</div>
-                      <p>Téléchargez l'ensemble des diplômes enregistrés au format CSV</p>
+                    <div className="danger-item">
+                      <div className="danger-text">
+                        <div className="danger-title"><Download size={16} /> Exporter toutes les données</div>
+                        <p>Téléchargez l'ensemble des diplômes enregistrés au format CSV</p>
+                      </div>
+                      <button className="btn-outline-grey">Exporter</button>
                     </div>
-                    <button className="btn-outline-grey">Exporter</button>
                   </div>
                 </div>
               </div>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Diploma Preview Modal */}
+      <AnimatePresence>
+        {showPreview && selectedDiploma && (
+          <div className="modal-overlay" onClick={() => setShowPreview(false)}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="modal-content-cert"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="modal-header-cert">
+                <h3>Aperçu du Diplôme</h3>
+                <button className="close-btn" onClick={() => setShowPreview(false)}>
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="modal-body-cert">
+                <CertificateTemplate
+                  diploma={selectedDiploma}
+                  institution={profile}
+                  verificationUrl={`${window.location.origin}/verify/${selectedDiploma.blockchainHash}`}
+                />
+              </div>
+              <div className="modal-footer-cert">
+                <p className="hint">Ce diplôme est certifié sur la blockchain. Le code QR permet une vérification instantanée.</p>
+                <button className="univ-btn-primary" onClick={() => window.print()}>
+                  <Download size={18} /> Imprimer le Diplôme
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <style>{`
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.75);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2000;
+          padding: 40px;
+          backdrop-filter: blur(5px);
+        }
+        .modal-content-cert {
+          background: white;
+          border-radius: 16px;
+          width: 100%;
+          max-width: 1200px;
+          max-height: 90vh;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .modal-header-cert {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 30px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .modal-header-cert h3 {
+          margin: 0;
+          font-size: 1.25rem;
+          color: #1e293b;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #64748b;
+          transition: color 0.2s;
+        }
+        .close-btn:hover {
+          color: #ef4444;
+        }
+        .modal-body-cert {
+          flex: 1;
+          overflow-y: auto;
+          padding: 40px;
+          background: #f8fafc;
+          display: flex;
+          justify-content: center;
+        }
+        .modal-footer-cert {
+          padding: 20px 30px;
+          border-top: 1px solid #f1f5f9;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .modal-footer-cert .hint {
+          font-size: 0.85rem;
+          color: #64748b;
+          margin: 0;
+        }
+        
+        @media print {
+          .dashboard-layout, .modal-overlay, .modal-header-cert, .modal-footer-cert {
+            display: none !important;
+          }
+          .modal-overlay {
+            position: relative;
+            background: none;
+            padding: 0;
+          }
+          .modal-content-cert {
+            box-shadow: none;
+            max-height: none;
+          }
+          .modal-body-cert {
+            padding: 0;
+            background: white;
+          }
+          body {
+            background: white;
+          }
+        }
+      `}</style>
     </DashboardLayout>
   );
 };

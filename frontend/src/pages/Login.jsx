@@ -7,7 +7,6 @@ import { motion } from 'framer-motion';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -43,13 +42,6 @@ const Login = () => {
           </div>
           <h1>Bon retour !</h1>
           <p>Connectez-vous pour gérer vos diplômes.</p>
-        </div>
-
-        <div className="role-tabs">
-          <button className={`role-tab ${role === 'student' ? 'active' : ''}`} onClick={() => setRole('student')}>Étudiant</button>
-          <button className={`role-tab ${role === 'institution' ? 'active' : ''}`} onClick={() => setRole('institution')}>Université</button>
-          <button className={`role-tab ${role === 'employer' ? 'active' : ''}`} onClick={() => setRole('employer')}>Employeur</button>
-          <button className={`role-tab ${role === 'admin' ? 'active' : ''}`} onClick={() => setRole('admin')}>Admin</button>
         </div>
 
         {error && (
@@ -104,9 +96,6 @@ const Login = () => {
         .auth-header { text-align: center; margin-bottom: 24px; }
         .auth-icon-circle { width: 56px; height: 56px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
         
-        .role-tabs { display: flex; background: #f1f5f9; padding: 4px; border-radius: 12px; margin-bottom: 32px; border: 1px solid var(--border-light); }
-        .role-tab { flex: 1; border: none; background: none; color: var(--text-muted); padding: 10px 4px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; }
-        .role-tab.active { background: var(--primary); color: white; }
         .input-wrapper { display: flex; align-items: center; border: 1px solid var(--border-light); border-radius: 12px; padding: 0 16px; background: white; }
         .input-wrapper:focus-within { border-color: var(--secondary); box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.1); }
         .input-icon { color: var(--text-muted); margin-right: 12px; }

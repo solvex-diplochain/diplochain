@@ -36,7 +36,7 @@ const IssueDiploma = () => {
     field: '',
     level: 'bachelor',
     issueDate: new Date().toISOString().split('T')[0],
-    grade: 'pass',
+    grade: 'passable',
     description: '',
     creditsEarned: ''
   });
@@ -238,7 +238,15 @@ const IssueDiploma = () => {
                     <select 
                       required 
                       value={formData.studentId}
-                      onChange={(e) => setFormData({...formData, studentId: e.target.value})}
+                      onChange={(e) => {
+                        const selectedId = e.target.value;
+                        const student = students.find(s => s._id === selectedId);
+                        setFormData({
+                          ...formData, 
+                          studentId: selectedId,
+                          field: student?.studentProfile?.major || formData.field
+                        });
+                      }}
                     >
                       <option value="">-- Sélectionnez un étudiant dans la base --</option>
                       {students.map(s => (
@@ -301,9 +309,12 @@ const IssueDiploma = () => {
                   <div className="input-group pro-group">
                     <label>Mention / Grade</label>
                     <select value={formData.grade} onChange={(e) => setFormData({...formData, grade: e.target.value})}>
-                      <option value="pass">Passable</option>
-                      <option value="merit">Assez Bien / Bien</option>
-                      <option value="distinction">Très Bien</option>
+                      <option value="passable">Passable</option>
+                      <option value="assez bien">Assez Bien</option>
+                      <option value="bien">Bien</option>
+                      <option value="très bien">Très Bien</option>
+                      <option value="excellent">Excellent</option>
+                      <option value="distinction">Distinction</option>
                     </select>
                   </div>
                   <div className="input-group pro-group">

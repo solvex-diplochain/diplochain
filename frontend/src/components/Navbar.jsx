@@ -25,6 +25,7 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="nav-links">
+          <Link to="/" className="nav-item">Accueil</Link>
           <Link to="/verify" className="nav-item">Vérifier</Link>
           {user ? (
             <>
@@ -60,6 +61,7 @@ const Navbar = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mobile-menu glass"
         >
+          <Link to="/" onClick={() => setIsOpen(false)}>Accueil</Link>
           <Link to="/verify" onClick={() => setIsOpen(false)}>Vérifier</Link>
           {user ? (
             <>

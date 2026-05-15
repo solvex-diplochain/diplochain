@@ -495,6 +495,110 @@ const verifyEmail = async (req, res, next) => {
   }
 };
 
+// @desc    Vérifier le matricule étudiant
+// @route   POST /api/auth/claim-student/verify
+// @access  Public
+const verifyMatricule = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { matricule } = req.body;
+
+    const user = await User.findOne({ 
+      role: 'student', 
+      'studentProfile.studentId': matricule 
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ce matricule est introuvable. Veuillez contacter votre établissement universitaire.'
+      });
+    }
+
+    // On peut ajouter une logique pour vérifier si le compte a déjà été réclamé.
+    // Pour l'instant, s'il a déjà changé son mot de passe par défaut, on peut le considérer comme réclamé.
+    // Ou s'il a isEmailVerified. Simplifions en disant qu'il peut toujours le refaire.
+
+    res.status(200).json({
+      success: true,
+      data: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        major: user.studentProfile?.major || ''
+      }
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Confirmer le compte étudiant, màj email et envoyer mot de passe
+// @route   POST /api/auth/claim-student/confirm
+// @access  Public
+const confirmStudentAccount = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { matricule, email, phoneNumber } = req.body;
+
+    const user = await User.findOne({ 
+      role: 'student', 
+      'studentProfile.studentId': matricule 
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ce matricule est introuvable.'
+      });
+    }
+
+    // Vérifier si l'email n'est pas déjà utilisé par quelqu'un d'autre
+    if (email && email.toLowerCase() !== user.email.toLowerCase()) {
+      const emailExists = await User.findOne({ email: email.toLowerCase() });
+      if (emailExists) {
+         return res.status(400).json({
+           success: false,
+           message: 'Cet email est déjà utilisé par un autre compte.'
+         });
+      }
+      user.email = email.toLowerCase();
+    }
+
+    if (phoneNumber) {
+      user.phoneNumber = phoneNumber;
+    }
+
+    // Générer un mot de passe sécurisé (ex: Diplo-RandomHex-2026)
+    const randomHex = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const generatedPassword = `Diplo-${randomHex}!26`;
+
+    user.password = generatedPassword;
+    user.isEmailVerified = true; // On le marque comme vérifié vu qu'il vient de l'entrer
+    await user.save();
+
+    // Simuler l'envoi de l'email
+    const emailService = require('../services/emailService');
+    await emailService.sendDefaultPasswordEmail(user.email, `${user.firstName} ${user.lastName}`, generatedPassword);
+
+    res.status(200).json({
+      success: true,
+      message: 'Compte confirmé avec succès. Un mot de passe a été envoyé à votre adresse email.'
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -504,5 +608,7 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
-  verifyEmail
+  verifyEmail,
+  verifyMatricule,
+  confirmStudentAccount
 };

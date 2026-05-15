@@ -9,7 +9,9 @@ const {
   logout,
   forgotPassword,
   resetPassword,
-  verifyEmail
+  verifyEmail,
+  verifyMatricule,
+  confirmStudentAccount
 } = require('../controllers/authController');
 
 const { protect } = require('../middleware/auth');
@@ -117,6 +119,17 @@ router.post('/login', loginValidation, login);
 router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
 router.put('/reset-password/:token', resetPasswordValidation, resetPassword);
 router.post('/verify-email/:token', verifyEmail);
+
+// Routes pour réclamation de compte étudiant
+router.post('/claim-student/verify', [
+  body('matricule').notEmpty().withMessage('Le matricule est requis')
+], verifyMatricule);
+
+router.post('/claim-student/confirm', [
+  body('matricule').notEmpty().withMessage('Le matricule est requis'),
+  body('email').isEmail().normalizeEmail().withMessage('Veuillez entrer un email valide'),
+  body('phoneNumber').optional().matches(/^\+?[1-9]\d{1,14}$/).withMessage('Numéro de téléphone invalide')
+], confirmStudentAccount);
 
 // Routes protégées
 router.get('/profile', protect, getProfile);

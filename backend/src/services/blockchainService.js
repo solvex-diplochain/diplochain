@@ -219,6 +219,8 @@ class BlockchainService {
   }
 
   generateVerificationUrl(hash) {
+    // Note: Pour la vérification via mobile en local, FRONTEND_URL doit être l'IP de votre machine
+    // au lieu de localhost (ex: http://192.168.1.10:5173)
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     return `${frontendUrl}/verify/${hash}`;
   }

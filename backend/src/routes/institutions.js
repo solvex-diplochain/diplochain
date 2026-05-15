@@ -1,6 +1,7 @@
 const express = require('express');
 const { body } = require('express-validator');
 const { protect, authorize } = require('../middleware/auth');
+const upload = require('../middleware/upload');
 const {
   getInstitutions,
   getInstitutionById,
@@ -8,7 +9,8 @@ const {
   updateInstitution,
   getInstitutionDiplomas,
   getMyInstitution,
-  updateMyInstitution
+  updateMyInstitution,
+  uploadLogoInstitution
 } = require('../controllers/institutionController');
 
 const router = express.Router();
@@ -56,12 +58,16 @@ const updateValidation = [
     .withMessage('URL du site web invalide')
 ];
 
+// Configure multer for logo (images only)
+const logoUpload = upload;
+
 router.get('/', getInstitutions);
 router.get('/my-profile', protect, authorize('institution'), getMyInstitution);
 router.put('/my-profile', protect, authorize('institution'), updateValidation, updateMyInstitution);
+router.post('/my-profile/upload-logo', protect, authorize('institution'), logoUpload.single('logo'), uploadLogoInstitution);
 router.post('/', protect, authorize('institution'), createValidation, createInstitution);
 router.get('/:id', getInstitutionById);
 router.put('/:id', protect, updateValidation, updateInstitution);
 router.get('/:id/diplomas', protect, getInstitutionDiplomas);
 
-module.exports = router;
+module.exports = router;

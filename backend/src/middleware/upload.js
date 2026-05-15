@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Assurer que le dossier d'upload existe
-const uploadDir = 'uploads/diplomas';
+const uploadDir = path.join(__dirname, '../../uploads/diplomas');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -25,6 +25,9 @@ const fileFilter = (req, file, cb) => {
     'application/pdf', 
     'image/jpeg', 
     'image/png',
+    'image/gif',
+    'image/webp',
+    'image/svg+xml',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
     'application/vnd.ms-excel', // .xls
     'text/csv' // .csv
@@ -33,7 +36,7 @@ const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Format de fichier non supporté. Utilisez PDF, JPEG, PNG, Excel ou CSV.'), false);
+    cb(new Error('Format de fichier non supporté. Utilisez PDF, JPEG, PNG, GIF, WEBP, SVG, Excel ou CSV.'), false);
   }
 };
 
